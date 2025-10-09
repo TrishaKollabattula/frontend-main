@@ -1,4 +1,4 @@
-//src/components/Register.js - Enhanced with Black & White Theme
+//src/components/Register.js - Enhanced with Password Visibility Toggle
 import React, { useState, useEffect } from 'react';
 import './Register.css';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,11 @@ const Register = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState(0);
+  
+  // Password visibility states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -156,11 +161,9 @@ const Register = () => {
       if (response.ok) {
         setSuccess('Registration successful! Taking you to the survey...');
         
-        // CRITICAL FIX: Save username to localStorage for survey linking
         localStorage.setItem('registeredUserId', formData.username.trim());
         localStorage.setItem('username', formData.username.trim());
         
-        // Save token if returned
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
@@ -183,54 +186,46 @@ const Register = () => {
         }, 1500);
 
       } else {
-        // Handle error responses with specific messages
         if (data.error) {
           const errorMessage = data.error.toLowerCase();
           
-          // Check for username already exists
           if (errorMessage.includes('username') && (errorMessage.includes('already') || errorMessage.includes('exists'))) {
             setValidationErrors({ 
               username: 'Username already taken. Please choose a different username.' 
             });
-            setError(''); // Clear general error
+            setError('');
           } 
-          // Check for email already exists
           else if (errorMessage.includes('email') && (errorMessage.includes('already') || errorMessage.includes('registered'))) {
             setValidationErrors({ 
               email: 'This email is already registered. Please use a different email or try logging in.' 
             });
-            setError(''); // Clear general error
+            setError('');
           } 
-          // Generic user exists error
           else if (errorMessage.includes('user') && errorMessage.includes('already')) {
             setError('An account with these details already exists. Please try logging in instead.');
           }
-          // Password mismatch
           else if (errorMessage.includes('password') && errorMessage.includes('match')) {
             setValidationErrors({
               confirmPassword: 'Passwords do not match'
             });
-            setError(''); // Clear general error
+            setError('');
           }
-          // Invalid format errors
           else if (errorMessage.includes('invalid') && errorMessage.includes('email')) {
             setValidationErrors({
               email: 'Please enter a valid email address'
             });
-            setError(''); // Clear general error
+            setError('');
           }
           else if (errorMessage.includes('invalid') && errorMessage.includes('username')) {
             setValidationErrors({
               username: 'Username can only contain letters, numbers, and underscores'
             });
-            setError(''); // Clear general error
+            setError('');
           }
-          // Any other error from backend
           else {
             setError(data.error);
           }
         } 
-        // Handle HTTP status codes without specific error message
         else {
           if (response.status === 409) {
             setError('User already exists. Please try logging in or use different credentials.');
@@ -348,15 +343,25 @@ const Register = () => {
 
               <div className="form-group">
                 <label>Password *</label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Create a strong password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={validationErrors.password ? 'error' : ''}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Create a strong password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className={validationErrors.password ? 'error' : ''}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
                 {formData.password && (
                   <div style={{
                     marginTop: '0.5rem',
@@ -391,15 +396,25 @@ const Register = () => {
 
               <div className="form-group">
                 <label>Confirm Password *</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className={validationErrors.confirmPassword ? 'error' : ''}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className={validationErrors.confirmPassword ? 'error' : ''}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
                 {validationErrors.confirmPassword && <span className="field-error">{validationErrors.confirmPassword}</span>}
               </div>
 

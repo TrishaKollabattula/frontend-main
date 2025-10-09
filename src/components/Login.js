@@ -1,4 +1,4 @@
-// src/components/Login.js
+// src/components/Login.js - With Password Visibility Toggle
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -11,9 +11,9 @@ const Login = ({ onLogin }) => {
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Toggle theme and persist
   const toggleTheme = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
@@ -26,7 +26,6 @@ const Login = ({ onLogin }) => {
     }
   };
 
-  // On load, check for saved theme and existing token
   useEffect(() => {
     const saved = localStorage.getItem("theme");
     if (saved === "dark") {
@@ -34,7 +33,6 @@ const Login = ({ onLogin }) => {
       document.body.classList.add("dark");
     }
 
-    // If user is already logged in, redirect to connect
     const token = localStorage.getItem("token");
     if (token) {
       navigate("/connect", { replace: true });
@@ -56,12 +54,10 @@ const Login = ({ onLogin }) => {
       localStorage.setItem("username", user.username);
       setSuccess("Login successful! Redirecting...");
       
-      // Call onLogin if provided
       if (onLogin) {
         onLogin(user);
       }
       
-      // Navigate after a brief delay for UX
       setTimeout(() => {
         setIsLoading(false);
         navigate("/connect", { replace: true });
@@ -74,7 +70,6 @@ const Login = ({ onLogin }) => {
 
   return (
     <>
-      {/* Watermark Container */}
       <div className="watermark-container">
         <div className="watermark-text watermark-1">MARKETING BOT</div>
         <div className="watermark-text watermark-2">MARKETING BOT</div>
@@ -83,16 +78,13 @@ const Login = ({ onLogin }) => {
         <div className="watermark-icon icon-3">📊</div>
       </div>
 
-      {/* Theme Toggle */}
       <button className="theme-toggle" onClick={toggleTheme}>
         {isDarkMode ? "☀️" : "🌙"}
       </button>
 
-      {/* Main Container */}
       <div className="login-container">
         <div className="login-wrapper">
           
-          {/* Left Side - Branding */}
           <div className="brand-section">
             <div className="brand-header">
               <img 
@@ -152,7 +144,6 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
-            {/* About Section */}
             <div className="about-section">
               <h3>About Marketing Bot</h3>
               <p>
@@ -168,7 +159,6 @@ const Login = ({ onLogin }) => {
             </div>
           </div>
 
-          {/* Right Side - Login Form */}
           <div className="login-section">
             <div className="login-header">
               <h2>Get started with your account</h2>
@@ -189,13 +179,23 @@ const Login = ({ onLogin }) => {
 
               <div className="form-group">
                 <label>Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
               </div>
 
               {error && (
@@ -249,7 +249,6 @@ const Login = ({ onLogin }) => {
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="login-footer">
         <div className="footer-content">
           <p>&copy; 2025 Marketing Bot by INIKOLA. All Rights Reserved.</p>
