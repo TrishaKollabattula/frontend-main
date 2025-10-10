@@ -10,8 +10,8 @@ const FacebookConnect = ({ appUser, onConnected, connected, status }) => {
     // Same Facebook App ID as Instagram (your Meta app)
     const clientId = '1095157869184608';
     const redirectUri = encodeURIComponent('https://13.233.45.167:5000/social/facebook/callback');
-    // Use only basic permissions that don't require app review
-    const scope = encodeURIComponent('pages_show_list,pages_read_engagement');
+    // Use pages_manage_posts instead of pages_manage_content
+    const scope = encodeURIComponent('pages_show_list,pages_read_engagement,pages_manage_posts');
     const state = encodeURIComponent(appUser || 'random_state');
     
     const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${state}`;

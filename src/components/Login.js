@@ -1,4 +1,4 @@
-// src/components/Login.js - With Password Visibility Toggle
+// src/components/Login.js - With Remember Me Feature
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,6 +7,7 @@ import "./Login.css";
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,9 +34,27 @@ const Login = ({ onLogin }) => {
       document.body.classList.add("dark");
     }
 
+    // Check for remembered credentials
+    const rememberedUsername = localStorage.getItem("rememberedUsername");
+    const rememberedRememberMe = localStorage.getItem("rememberMe") === "true";
+    
+    if (rememberedUsername && rememberedRememberMe) {
+      setUsername(rememberedUsername);
+      setRememberMe(true);
+    }
+
+    // Check if already logged in
     const token = localStorage.getItem("token");
     if (token) {
-      navigate("/connect", { replace: true });
+      // Verify token is still valid
+      const tokenExpiry = localStorage.getItem("tokenExpiry");
+      if (tokenExpiry && parseInt(tokenExpiry) > Date.now()) {
+        navigate("/connect", { replace: true });
+      } else {
+        // Token expired, clear storage
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenExpiry");
+      }
     }
   }, [navigate]);
 
@@ -44,14 +63,36 @@ const Login = ({ onLogin }) => {
     setError("");
     setSuccess("");
     setIsLoading(true);
+    
     try {
       const response = await axios.post(
         "https://4fqbpp1yya.execute-api.ap-south-1.amazonaws.com/prod/user/login",
-        { username, password }
+        { 
+          username, 
+          password,
+          rememberMe 
+        }
       );
-      const { token, user } = response.data;
+      
+      const { token, user, rememberMe: rememberMeResponse, expiresIn } = response.data;
+      
+      // Store token
       localStorage.setItem("token", token);
       localStorage.setItem("username", user.username);
+      
+      // Calculate and store token expiry
+      const expiryTime = Date.now() + (expiresIn * 1000);
+      localStorage.setItem("tokenExpiry", expiryTime.toString());
+      
+      // Handle Remember Me
+      if (rememberMeResponse) {
+        localStorage.setItem("rememberedUsername", username);
+        localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.removeItem("rememberedUsername");
+        localStorage.removeItem("rememberMe");
+      }
+      
       setSuccess("Login successful! Redirecting...");
       
       if (onLogin) {
@@ -62,8 +103,10 @@ const Login = ({ onLogin }) => {
         setIsLoading(false);
         navigate("/connect", { replace: true });
       }, 1000);
+      
     } catch (err) {
-      setError("Invalid username or password");
+      const errorMessage = err.response?.data?.error || "Invalid username or password";
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -196,6 +239,18 @@ const Login = ({ onLogin }) => {
                     {showPassword ? '👁️' : '👁️‍🗨️'}
                   </button>
                 </div>
+              </div>
+
+              <div className="form-group remember-me-container">
+                <label className="remember-me-label">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="remember-me-checkbox"
+                  />
+                  <span className="remember-me-text">Remember me for 30 days</span>
+                </label>
               </div>
 
               {error && (

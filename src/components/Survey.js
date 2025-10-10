@@ -1,4 +1,4 @@
-//src/components/Survey.js - Final version with logo upload
+//src/components/Survey.js - Fixed version with logo upload
 import React, { useState, useEffect } from 'react';
 import './Survey.css';
 import { useNavigate } from 'react-router-dom';
@@ -167,12 +167,30 @@ const Survey = () => {
   const handleNumColorsChange = (e) => {
     const count = parseInt(e.target.value, 10);
     setNumColors(count);
-    const colors = Array(count).fill('#000000');
+    
+    // Get existing colors or create new array
+    const existingColors = surveyAnswers['color_theme'] || [];
+    const colors = [];
+    
+    // Fill with existing colors or default to black
+    for (let i = 0; i < count; i++) {
+      colors[i] = existingColors[i] || '#000000';
+    }
+    
     handleAnswerChange('color_theme', colors);
   };
 
   const handleColorChange = (index, value) => {
-    const colors = [...(surveyAnswers['color_theme'] || Array(numColors).fill('#000000'))];
+    // Get existing colors or create array with default values
+    const existingColors = surveyAnswers['color_theme'] || [];
+    const colors = [];
+    
+    // Ensure we have all colors filled
+    for (let i = 0; i < numColors; i++) {
+      colors[i] = existingColors[i] || '#000000';
+    }
+    
+    // Update the specific color
     colors[index] = value;
     handleAnswerChange('color_theme', colors);
   };
@@ -406,7 +424,7 @@ const Survey = () => {
         return (
           <div>
             <label style={{ fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>
-              Number of colors (2-5):
+              Number of colors:
             </label>
             <input
               type="number"
@@ -421,7 +439,7 @@ const Survey = () => {
                 <label style={{ minWidth: '70px', fontSize: '0.875rem' }}>Color {index + 1}:</label>
                 <input
                   type="color"
-                  value={surveyAnswers['color_theme']?.[index] || '#000000'}
+                  value={(surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'}
                   onChange={(e) => handleColorChange(index, e.target.value)}
                   style={{ width: '60px', height: '40px' }}
                 />
@@ -429,13 +447,13 @@ const Survey = () => {
                   style={{
                     width: '80px',
                     height: '40px',
-                    backgroundColor: surveyAnswers['color_theme']?.[index] || '#000000',
+                    backgroundColor: (surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000',
                     border: '2px solid var(--border-color)',
                     borderRadius: '8px'
                   }}
                 ></div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {surveyAnswers['color_theme']?.[index] || '#000000'}
+                  {(surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'}
                 </span>
               </div>
             ))}
