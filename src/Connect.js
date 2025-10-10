@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './Connect.css';
 import LinkedInConnect from './components/LinkedInConnect';
 import InstagramConnect from './components/InstagramConnect';
+import FacebookConnect from './components/FacebookConnect';
 
 const Connect = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -102,6 +103,8 @@ const Connect = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Social status data:', data);
+        
         setSocialConnections({
           instagram: {
             connected: data.instagram?.connected || false,
@@ -139,19 +142,14 @@ const Connect = () => {
   };
 
   const handleLogout = () => {
-    // Close the profile menu immediately
     setShowProfileMenu(false);
-    
-    // Clear authentication data
     localStorage.removeItem('token');
     localStorage.removeItem('username');
-    
-    // Navigate to login without reloading
     navigate('/login', { replace: true });
   };
 
   const handleSocialConnect = (platform) => {
-    if (platform === 'Twitter' || platform === 'Facebook') {
+    if (platform === 'Twitter') {
       alert(`${platform} connection coming soon!`);
     }
   };
@@ -186,7 +184,7 @@ const Connect = () => {
       icon: '👥', 
       connected: socialConnections.facebook.connected, 
       color: '#1877F2',
-      component: null,
+      component: FacebookConnect,  // ✅ Added Facebook component
       detail: socialConnections.facebook.detail
     }
   ];
@@ -297,13 +295,19 @@ const Connect = () => {
                     <p className="social-status">
                       {account.connected ? 'Connected' : 'Not connected'}
                     </p>
+                    {/* ✅ Show connection details for Facebook */}
+                    {account.name === 'Facebook' && account.connected && account.detail && (
+                      <p className="social-detail">
+                        Page: {account.detail.page_name}
+                      </p>
+                    )}
                   </div>
                   {account.component ? (
                     <account.component
                       appUser={user?.username}
                       onConnected={fetchSocialStatus}
                       connected={account.connected}
-                      connectionDetails={account.detail}
+                      status={account.detail}
                     />
                   ) : (
                     <button 
