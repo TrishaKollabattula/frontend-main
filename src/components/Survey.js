@@ -1,4 +1,4 @@
-//src/components/Survey.js - Enhanced with catchy text and userId fix
+//src/components/Survey.js - Final version with logo upload
 import React, { useState, useEffect } from 'react';
 import './Survey.css';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,9 @@ const Survey = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [numColors, setNumColors] = useState(2);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
@@ -36,7 +39,18 @@ const Survey = () => {
     { value: 'restaurant', label: 'Restaurant', icon: '🍽️', desc: 'Food & Dining' }
   ];
 
+  // Logo upload question that appears for all business types
+  const logoQuestion = {
+    id: 'business_logo',
+    question: 'Upload your business logo (optional but recommended)',
+    type: 'file',
+    placeholder: 'Choose your logo file',
+    hint: 'PNG, JPG, or SVG format. Max size: 5MB. This will be used on your promotional content.',
+    accept: 'image/png,image/jpeg,image/jpg,image/svg+xml'
+  };
+
   const commonQuestions = [
+    logoQuestion, // Logo upload as first common question
     { 
       id: 'contact_details', 
       question: 'Please provide your contact details for promotional image footers', 
@@ -163,12 +177,61 @@ const Survey = () => {
     handleAnswerChange('color_theme', colors);
   };
 
+  // Handle logo file selection
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please upload a PNG, JPG, or SVG file');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      setError('Logo file size must be less than 5MB');
+      return;
+    }
+
+    setLogoFile(file);
+    
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLogoPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+    
+    setError('');
+  };
+
+  // Remove logo
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    handleAnswerChange('business_logo', null);
+  };
+
+  // Convert logo to base64 for storage
+  const convertLogoToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  };
+
   const handleSubmitSurvey = async () => {
     setIsSubmitting(true);
     setError('');
 
     try {
-      // CRITICAL FIX: Get the registered userId (username) from localStorage
+      // CRITICAL: Get the registered userId (username) from localStorage
       const registeredUserId = localStorage.getItem('registeredUserId') || 
                               localStorage.getItem('username') || 
                               null;
@@ -176,17 +239,51 @@ const Survey = () => {
       console.log('Survey submission - userId from localStorage:', registeredUserId);
 
       if (!registeredUserId) {
-        console.warn('No userId found in localStorage. Survey will be saved as anonymous.');
+        setError('Please complete registration first before submitting survey');
+        setIsSubmitting(false);
+        return;
       }
 
+      // Convert logo to base64 if uploaded
+      let logoData = null;
+      if (logoFile) {
+        setUploadingLogo(true);
+        try {
+          const base64Data = await convertLogoToBase64(logoFile);
+          logoData = {
+            fileName: logoFile.name,
+            fileType: logoFile.type,
+            fileSize: logoFile.size,
+            data: base64Data
+          };
+          console.log('Logo converted to base64, size:', logoFile.size, 'bytes');
+        } catch (error) {
+          console.error('Error converting logo:', error);
+          setError('Failed to process logo. Continuing without it...');
+        } finally {
+          setUploadingLogo(false);
+        }
+      }
+
+      // Include logo in survey answers
+      const finalAnswers = {
+        ...surveyAnswers,
+        business_logo: logoData
+      };
+
       const surveyData = {
-        userId: registeredUserId, // CRITICAL: Include userId here to link with Users table
+        userId: registeredUserId, // This will be the username
         businessType,
-        answers: surveyAnswers,
+        answers: finalAnswers,
         timestamp: new Date().toISOString()
       };
 
-      console.log('Submitting survey data:', surveyData);
+      console.log('Submitting survey data:', {
+        userId: surveyData.userId,
+        businessType: surveyData.businessType,
+        hasLogo: !!logoData,
+        logoFileName: logoData?.fileName
+      });
 
       const response = await fetch(
         'https://4fqbpp1yya.execute-api.ap-south-1.amazonaws.com/prod/user/register',
@@ -216,11 +313,57 @@ const Survey = () => {
       setError('Error processing survey. Please try again.');
     } finally {
       setIsSubmitting(false);
+      setUploadingLogo(false);
     }
   };
 
   const renderQuestionInput = (question) => {
     switch (question.type) {
+      case 'file':
+        return (
+          <div className="logo-upload-section">
+            <div className="logo-upload-container">
+              {!logoPreview ? (
+                <label className="logo-upload-box">
+                  <input
+                    type="file"
+                    accept={question.accept}
+                    onChange={handleLogoChange}
+                    style={{ display: 'none' }}
+                  />
+                  <div className="upload-prompt">
+                    <span className="upload-icon">📤</span>
+                    <p className="upload-text">Click to upload or drag and drop</p>
+                    <p className="upload-hint">PNG, JPG, SVG (max. 5MB)</p>
+                  </div>
+                </label>
+              ) : (
+                <div className="logo-preview-container">
+                  <img 
+                    src={logoPreview} 
+                    alt="Logo preview" 
+                    className="logo-preview"
+                  />
+                  <div className="logo-info">
+                    <p className="logo-filename">{logoFile?.name}</p>
+                    <p className="logo-filesize">
+                      {(logoFile?.size / 1024).toFixed(2)} KB
+                    </p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={handleRemoveLogo}
+                    className="remove-logo-btn"
+                  >
+                    ✕ Remove
+                  </button>
+                </div>
+              )}
+            </div>
+            {question.hint && <small className="field-hint">{question.hint}</small>}
+          </div>
+        );
+      
       case 'text':
         return (
           <>
@@ -426,7 +569,7 @@ const Survey = () => {
 
               {error && (
                 <div className="alert alert-error">
-                  <span className="alert-icon">!</span>
+                  <span className="alert-icon">⚠️</span>
                   <p>{error}</p>
                 </div>
               )}
@@ -450,10 +593,17 @@ const Survey = () => {
                 <button
                   type="button"
                   onClick={handleSubmitSurvey}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadingLogo}
                   className="btn-primary"
                 >
-                  {isSubmitting ? <span className="spinner"></span> : 'Complete Survey'}
+                  {(isSubmitting || uploadingLogo) ? (
+                    <>
+                      <span className="spinner"></span>
+                      {uploadingLogo ? 'Processing logo...' : 'Submitting...'}
+                    </>
+                  ) : (
+                    'Complete Survey'
+                  )}
                 </button>
               </div>
             </form>

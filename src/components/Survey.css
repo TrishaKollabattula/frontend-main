@@ -1,4 +1,4 @@
-/* Survey.css - Black & White Theme */
+/* Survey.css - Black & White Theme with Logo Upload Support */
 
 :root {
   --primary-black: #000000;
@@ -17,6 +17,8 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --success-color: #22c55e;
+  --danger-color: #ef4444;
 }
 
 * {
@@ -521,6 +523,183 @@ textarea {
   cursor: pointer;
 }
 
+/* Logo Upload Section */
+.logo-upload-section {
+  margin-top: 1rem;
+}
+
+.logo-upload-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.logo-upload-box {
+  display: block;
+  width: 100%;
+  padding: 3rem 2rem;
+  border: 2px dashed;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  background: transparent;
+}
+
+.survey-container.light .logo-upload-box {
+  border-color: var(--gray-300);
+  background: var(--gray-50);
+}
+
+.survey-container.dark .logo-upload-box {
+  border-color: var(--gray-600);
+  background: var(--gray-800);
+}
+
+.logo-upload-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.survey-container.light .logo-upload-box:hover {
+  border-color: var(--gray-500);
+  background: var(--gray-100);
+}
+
+.survey-container.dark .logo-upload-box:hover {
+  border-color: var(--gray-400);
+  background: var(--gray-700);
+}
+
+.upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-text {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.survey-container.light .upload-text {
+  color: var(--gray-900);
+}
+
+.survey-container.dark .upload-text {
+  color: var(--primary-white);
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.survey-container.light .upload-hint {
+  color: var(--gray-600);
+}
+
+.survey-container.dark .upload-hint {
+  color: var(--gray-400);
+}
+
+/* Logo Preview */
+.logo-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  border: 2px solid;
+  border-radius: 16px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.survey-container.light .logo-preview-container {
+  background: var(--gray-50);
+  border-color: var(--success-color);
+}
+
+.survey-container.dark .logo-preview-container {
+  background: var(--gray-800);
+  border-color: var(--success-color);
+}
+
+.logo-preview {
+  max-width: 200px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  animation: zoomIn 0.3s ease-out;
+}
+
+.logo-info {
+  text-align: center;
+}
+
+.logo-filename {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  word-break: break-word;
+}
+
+.survey-container.light .logo-filename {
+  color: var(--gray-900);
+}
+
+.survey-container.dark .logo-filename {
+  color: var(--primary-white);
+}
+
+.logo-filesize {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.survey-container.light .logo-filesize {
+  color: var(--gray-600);
+}
+
+.survey-container.dark .logo-filesize {
+  color: var(--gray-400);
+}
+
+.remove-logo-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--danger-color);
+  color: var(--primary-white);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remove-logo-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.remove-logo-btn:active {
+  transform: scale(0.98);
+}
+
 /* Alerts */
 .alert {
   display: flex;
@@ -530,6 +709,7 @@ textarea {
   border-radius: 12px;
   margin-bottom: 2rem;
   font-size: 1rem;
+  border: 2px solid;
 }
 
 .alert-icon {
@@ -542,7 +722,7 @@ textarea {
 }
 
 .alert-error {
-  border: 2px solid #ef4444;
+  border-color: var(--danger-color);
 }
 
 .survey-container.light .alert-error {
@@ -556,7 +736,7 @@ textarea {
 }
 
 .alert-success {
-  border: 2px solid #22c55e;
+  border-color: var(--success-color);
 }
 
 .survey-container.light .alert-success {
@@ -664,12 +844,12 @@ textarea {
   border-color: var(--primary-black);
 }
 
+/* Animations */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* Animations */
 @keyframes slideInUp {
   from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
@@ -678,6 +858,16 @@ textarea {
 @keyframes slideInDown {
   from { transform: translateY(-50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* Media Queries for Responsiveness */
@@ -773,6 +963,28 @@ textarea {
     font-size: 0.875rem;
   }
 
+  /* Logo Upload Mobile */
+  .logo-upload-box {
+    padding: 2rem 1rem;
+  }
+
+  .upload-icon {
+    font-size: 2.5rem;
+  }
+
+  .upload-text {
+    font-size: 0.875rem;
+  }
+
+  .logo-preview {
+    max-width: 150px;
+    max-height: 150px;
+  }
+
+  .logo-preview-container {
+    padding: 1.5rem;
+  }
+
   .action-buttons {
     flex-direction: column;
     gap: 0.75rem;
@@ -850,5 +1062,24 @@ textarea {
   .checkbox-option input {
     width: 18px;
     height: 18px;
+  }
+
+  /* Logo Upload Small Screen */
+  .logo-upload-box {
+    padding: 1.5rem 1rem;
+  }
+
+  .upload-icon {
+    font-size: 2rem;
+  }
+
+  .logo-preview {
+    max-width: 120px;
+    max-height: 120px;
+  }
+
+  .remove-logo-btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.75rem;
   }
 }
