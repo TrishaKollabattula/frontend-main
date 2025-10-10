@@ -71,7 +71,6 @@ body::after {
     animation: float 25s ease-in-out infinite reverse;
 }
 
-/* Additional Watermarks */
 .watermark-container {
     position: fixed;
     inset: 0;
@@ -219,7 +218,6 @@ body.dark .brand-logo {
     background: var(--primary-white);
 }
 
-/* Logo Image Styling */
 .brand-logo-img {
     width: 80px;
     height: 80px;
@@ -227,12 +225,10 @@ body.dark .brand-logo {
     transition: filter 0.3s ease;
 }
 
-/* Invert logo color in dark mode */
 body.dark .brand-logo-img {
     filter: invert(1) brightness(1);
 }
 
-/* Keep logo black in light mode */
 body:not(.dark) .brand-logo-img {
     filter: invert(0);
 }
@@ -618,6 +614,187 @@ body.dark .form-group input:focus {
     color: var(--gray-400);
 }
 
+/* Password Input Wrapper */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 3rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  opacity: 0.7;
+}
+
+.password-toggle-btn:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark .password-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-black);
+}
+
+body.dark .password-toggle-btn:focus {
+  box-shadow: 0 0 0 2px var(--primary-white);
+}
+
+.password-toggle-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.form-group .password-input-wrapper input {
+  padding-right: 3rem !important;
+}
+
+/* Remember Me Checkbox */
+.remember-me-container {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.remember-me-container label {
+  margin-left: 0 !important;
+}
+
+.remember-me-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  padding: 4px 0;
+  width: auto;
+}
+
+.remember-me-label:hover {
+  opacity: 0.85;
+}
+
+.remember-me-checkbox {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid var(--gray-400) !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background-color: var(--primary-white) !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-block !important;
+  font-size: 0.9375rem !important;
+}
+
+body.dark .remember-me-checkbox {
+  background-color: var(--gray-800) !important;
+  border-color: var(--gray-600) !important;
+}
+
+.remember-me-checkbox:hover {
+  border-color: var(--primary-black) !important;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.dark .remember-me-checkbox:hover {
+  border-color: var(--primary-white) !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05) !important;
+}
+
+.remember-me-checkbox:checked {
+  background-color: var(--primary-black) !important;
+  border-color: var(--primary-black) !important;
+}
+
+body.dark .remember-me-checkbox:checked {
+  background-color: var(--primary-white) !important;
+  border-color: var(--primary-white) !important;
+}
+
+.remember-me-checkbox:checked::after {
+  content: '✓' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(0) !important;
+  color: var(--primary-white) !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  animation: checkmarkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
+}
+
+body.dark .remember-me-checkbox:checked::after {
+  color: var(--primary-black) !important;
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.remember-me-checkbox:focus {
+  outline: none !important;
+  border-color: var(--primary-black) !important;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.dark .remember-me-checkbox:focus {
+  border-color: var(--primary-white) !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1) !important;
+}
+
+.remember-me-checkbox:active {
+  transform: scale(0.95) !important;
+}
+
+.remember-me-text {
+  font-size: 14px;
+  color: var(--gray-700);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+body.dark .remember-me-text {
+  color: var(--gray-300);
+}
+
 /* Buttons */
 .btn-primary {
     width: 100%;
@@ -722,51 +899,6 @@ body.dark .form-footer a {
 .form-footer a:hover {
     opacity: 0.7;
     text-decoration: underline;
-}
-
-/* Social Login */
-.social-divider {
-    text-align: center;
-    color: var(--gray-500);
-    font-size: 0.875rem;
-    margin: 1.5rem 0 1rem;
-}
-
-.social-buttons {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.social-btn {
-    flex: 1;
-    padding: 0.875rem;
-    border: 2px solid var(--gray-300);
-    border-radius: 12px;
-    background: var(--primary-white);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    color: var(--gray-700);
-}
-
-body.dark .social-btn {
-    background: var(--gray-800);
-    border-color: var(--gray-700);
-    color: var(--gray-300);
-}
-
-.social-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--gray-400);
-}
-
-body.dark .social-btn:hover {
-    border-color: var(--gray-600);
 }
 
 /* Stats */
@@ -886,6 +1018,19 @@ body.dark .stat-label {
     .footer-links span {
         display: none;
     }
+    
+    .remember-me-checkbox {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    
+    .remember-me-checkbox:checked::after {
+        font-size: 12px !important;
+    }
+    
+    .remember-me-text {
+        font-size: 13px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -917,173 +1062,26 @@ body.dark .stat-label {
     .login-footer {
         padding: 1.5rem 0;
     }
-}
-/* Enhanced Responsive Design for Login.css */
-
-/* Extra small devices (phones, 320px to 480px) */
-@media (max-width: 480px) {
-  body::before,
-  body::after {
-    font-size: 250px;
-  }
-  
-  .watermark-text {
-    font-size: 80px;
-  }
-  
-  .watermark-icon {
-    font-size: 50px;
-  }
-  
-  .login-container {
-    padding: 1rem;
-    padding-top: 4rem;
-  }
-  
-  .brand-info h1 {
-    font-size: 1.75rem;
-  }
-  
-  .brand-title {
-    font-size: 1.75rem;
-  }
-  
-  .brand-description {
-    font-size: 0.9375rem;
-  }
-  
-  .login-section {
-    padding: 1.25rem;
-  }
-  
-  .login-header h2 {
-    font-size: 1.5rem;
-  }
-  
-  .form-group input {
-    padding: 0.75rem 1rem;
-  }
-  
-  .social-buttons {
-    flex-direction: column;
-  }
-  
-  .stats-container {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-}
-
-/* Small tablets (481px to 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .login-wrapper {
-    gap: 3rem;
-  }
-  
-  .brand-title {
-    font-size: 2.25rem;
-  }
-  
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-}
-
-/* Medium devices (769px to 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .login-wrapper {
-    grid-template-columns: 1fr 450px;
-    gap: 3rem;
-  }
-  
-  .brand-title {
-    font-size: 3rem;
-  }
-}
-
-/* Large devices (1025px to 1440px) */
-@media (min-width: 1025px) and (max-width: 1440px) {
-  .login-container {
-    padding: 2rem 3rem;
-  }
-}
-
-/* Extra large devices (1441px and up) */
-@media (min-width: 1441px) {
-  .login-wrapper {
-    max-width: 1600px;
-  }
-  
-  .login-container {
-    padding: 2rem 4rem;
-  }
-}
-
-/* Password Input Wrapper with Eye Icon Toggle */
-/* Add this CSS to BOTH Register.css AND Login.css */
-
-.password-input-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.password-input-wrapper input {
-  width: 100%;
-  padding-right: 3rem; /* Make space for the eye icon */
-}
-
-.password-toggle-btn {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  border-radius: 6px;
-  opacity: 0.7;
-}
-
-.password-toggle-btn:hover {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-body.dark .password-toggle-btn:hover,
-.register-container-split.dark .password-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.password-toggle-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--primary-black);
-}
-
-body.dark .password-toggle-btn:focus,
-.register-container-split.dark .password-toggle-btn:focus {
-  box-shadow: 0 0 0 2px var(--primary-white);
-}
-
-.password-toggle-btn:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-/* Ensure proper alignment in both light and dark modes */
-.form-group .password-input-wrapper input {
-  padding-right: 3rem !important;
-}
-
-/* Responsive adjustments for mobile */
-@media (max-width: 480px) {
-  .password-toggle-btn {
-    font-size: 1.125rem;
-    padding: 0.375rem;
-  }
+    
+    .password-toggle-btn {
+        font-size: 1.125rem;
+        padding: 0.375rem;
+    }
+    
+    .remember-me-checkbox {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    .remember-me-checkbox:checked::after {
+        font-size: 11px !important;
+    }
+    
+    .remember-me-text {
+        font-size: 12px;
+    }
+    
+    .remember-me-label {
+        gap: 10px;
+    }
 }
