@@ -1,4 +1,4 @@
-//src/components/Register.js - Enhanced with Password Visibility Toggle
+// src/components/Register.js - Complete Fixed Version
 import React, { useState, useEffect } from 'react';
 import './Register.css';
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +14,9 @@ const Register = () => {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState(0);
-  
-  // Password visibility states
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -26,15 +24,21 @@ const Register = () => {
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
-      setIsDarkMode(true);
+    const darkMode = saved === 'dark' || saved === null;
+    setIsDarkMode(darkMode);
+    
+    if (darkMode) {
       document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
     }
   }, []);
 
   useEffect(() => {
     if (formData.password) {
       calculatePasswordStrength(formData.password);
+    } else {
+      setPasswordStrength(0);
     }
   }, [formData.password]);
 
@@ -156,7 +160,6 @@ const Register = () => {
       );
 
       const data = await response.json();
-      console.log('Registration response:', { status: response.status, data });
 
       if (response.ok) {
         setSuccess('Registration successful! Taking you to the survey...');
@@ -167,11 +170,6 @@ const Register = () => {
         if (data.token) {
           localStorage.setItem('token', data.token);
         }
-        
-        console.log('Saved to localStorage:', {
-          registeredUserId: formData.username.trim(),
-          username: formData.username.trim()
-        });
         
         setFormData({
           name: '',
@@ -193,34 +191,14 @@ const Register = () => {
             setValidationErrors({ 
               username: 'Username already taken. Please choose a different username.' 
             });
-            setError('');
           } 
           else if (errorMessage.includes('email') && (errorMessage.includes('already') || errorMessage.includes('registered'))) {
             setValidationErrors({ 
               email: 'This email is already registered. Please use a different email or try logging in.' 
             });
-            setError('');
           } 
           else if (errorMessage.includes('user') && errorMessage.includes('already')) {
             setError('An account with these details already exists. Please try logging in instead.');
-          }
-          else if (errorMessage.includes('password') && errorMessage.includes('match')) {
-            setValidationErrors({
-              confirmPassword: 'Passwords do not match'
-            });
-            setError('');
-          }
-          else if (errorMessage.includes('invalid') && errorMessage.includes('email')) {
-            setValidationErrors({
-              email: 'Please enter a valid email address'
-            });
-            setError('');
-          }
-          else if (errorMessage.includes('invalid') && errorMessage.includes('username')) {
-            setValidationErrors({
-              username: 'Username can only contain letters, numbers, and underscores'
-            });
-            setError('');
           }
           else {
             setError(data.error);
@@ -231,8 +209,6 @@ const Register = () => {
             setError('User already exists. Please try logging in or use different credentials.');
           } else if (response.status === 400) {
             setError('Invalid registration data. Please check all fields and try again.');
-          } else if (response.status === 500) {
-            setError('Server error occurred. Please try again later.');
           } else {
             setError('Registration failed. Please try again.');
           }
@@ -247,103 +223,176 @@ const Register = () => {
   };
 
   return (
-    <div className={`register-container-split ${isDarkMode ? 'dark' : 'light'}`}>
-      <button className="theme-toggle top-left" onClick={toggleTheme}>
-        {isDarkMode ? '☀️' : '🌙'}
-      </button>
-      <button className="logout-button" onClick={() => navigate('/login')}>
-        Logout →
-      </button>
+    <div className="futuristic-register-container">
+      <div className="cyber-grid"></div>
 
-      <div className="extra-icons">
-        <span className="icon1">🚀</span>
-        <span className="icon2">🤖</span>
-        <span className="icon3">📊</span>
-        <span className="icon4">💡</span>
+      <div className="floating-particles">
+        {[...Array(20)].map((_, i) => (
+          <div key={i} className="particle"></div>
+        ))}
       </div>
 
-      <div className="register-split-content">
-        {/* Left Side - Marketing Message */}
-        <div className="marketing-section">
-          <div className="marketing-content">
-            <div className="brand-section">
-              <img src="/123.png" alt="Marketing Bot Logo" className="marketing-logo" />
+      <button className="theme-toggle-futuristic" onClick={toggleTheme}>
+        {isDarkMode ? '☀️' : '🌙'}
+      </button>
+
+      <button className="back-to-login-btn" onClick={() => navigate('/login')}>
+        ← Back to Login
+      </button>
+
+      <div className="register-content-wrapper">
+        <div className="hero-section">
+          <div className="brand-header-futuristic">
+            <div className="brand-main">
+              <div className="logo-container">
+                <img src="/123.png" alt="Marketing Bot" className="brand-logo-futuristic" />
+                <div className="logo-glow"></div>
+              </div>
             </div>
-            
-            <h1 className="marketing-title">
-              START YOUR
-              <span className="marketing-highlight">MARKETING REVOLUTION</span>
-              Join the AI-Powered Future
+          </div>
+
+          <div className="hero-typing-container">
+            <h1 className="hero-title">
+              <span className="gradient-text">START YOUR MARKETING REVOLUTION</span>
             </h1>
-            
-            <p className="marketing-description">
+            <p className="hero-subtitle">
               Transform your business with the power of AI. Join 1000+ forward-thinking entrepreneurs 
-              who are already dominating social media. One platform, unlimited possibilities – create, 
-              schedule, and scale your brand like never before.
+              who are already dominating social media.
             </p>
+          </div>
+
+          {/* Integrations Section with Orbit Animation */}
+          <div className="integrations-section">
+            <h3 className="section-title">
+              <span className="icon-pulse">🔗</span>
+              Connect Your Platforms
+            </h3>
+            <p className="section-subtitle">Seamlessly integrate with your favorite social media channels</p>
+
+            <div className="platforms-orbit">
+              <div className="orbit-center">
+                <div className="center-logo">🤖</div>
+                <div className="pulse-ring"></div>
+                <div className="pulse-ring-2"></div>
+              </div>
+
+              <div className="platform-node" style={{"--index": 0, "--color": "#E4405F"}}>
+                <div className="connection-line" style={{background: "linear-gradient(to bottom, #E4405F, transparent)"}}></div>
+                <div className="platform-icon" style={{"--color": "#E4405F"}}>
+                  📷
+                </div>
+                <span className="platform-name">Instagram</span>
+              </div>
+
+              <div className="platform-node" style={{"--index": 1, "--color": "#0A66C2"}}>
+                <div className="connection-line" style={{background: "linear-gradient(to bottom, #0A66C2, transparent)"}}></div>
+                <div className="platform-icon" style={{"--color": "#0A66C2"}}>
+                  💼
+                </div>
+                <span className="platform-name">LinkedIn</span>
+              </div>
+
+              <div className="platform-node" style={{"--index": 2, "--color": "#1DA1F2"}}>
+                <div className="connection-line" style={{background: "linear-gradient(to bottom, #1DA1F2, transparent)"}}></div>
+                <div className="platform-icon" style={{"--color": "#1DA1F2"}}>
+                  🐦
+                </div>
+                <span className="platform-name">Facebook</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="features-futuristic">
+            <div className="feature-card-futuristic">
+              <div className="feature-icon-futuristic">⚡</div>
+              <h4>AI-Powered</h4>
+              <p>Generate content using advanced AI technology</p>
+            </div>
+            <div className="feature-card-futuristic">
+              <div className="feature-icon-futuristic">📊</div>
+              <h4>Analytics</h4>
+              <p>Track performance across all platforms</p>
+            </div>
+            <div className="feature-card-futuristic">
+              <div className="feature-icon-futuristic">🚀</div>
+              <h4>Auto-Post</h4>
+              <p>Schedule and publish automatically</p>
+            </div>
           </div>
         </div>
 
-        {/* Right Side - Registration Form */}
-        <div className="register-section">
-          <div className="register-form-container">
-            <h1 className="register-form-title">Create Your Account</h1>
-            <p className="register-form-subtitle">Start your free journey today</p>
-
-            <div className="info-card">
-              <span style={{ fontSize: '1.25rem' }}>ℹ️</span>
-              <p style={{ fontSize: '0.875rem', margin: 0, lineHeight: 1.6 }}>
-                After registration, complete a quick survey to personalize your content.
-              </p>
+        <div className="register-form-section">
+          <div className="form-container-futuristic">
+            <div className="form-header-futuristic">
+              <h2>Create Your Account</h2>
+              <p>Start your free journey today</p>
             </div>
 
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
+            <div className="info-card-futuristic">
+              <span>ℹ️</span>
+              <p>After registration, complete a quick survey to personalize your content.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="futuristic-form">
+              <div className="input-group-futuristic">
                 <label>Full Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={validationErrors.name ? 'error' : ''}
-                  required
-                />
-                {validationErrors.name && <span className="field-error">{validationErrors.name}</span>}
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className={validationErrors.name ? 'error' : ''}
+                  />
+                  <div className="input-glow"></div>
+                </div>
+                {validationErrors.name && (
+                  <span className="field-error">{validationErrors.name}</span>
+                )}
               </div>
 
-              <div className="form-group">
+              <div className="input-group-futuristic">
                 <label>Email Address *</label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="your.email@example.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={validationErrors.email ? 'error' : ''}
-                  required
-                />
-                {validationErrors.email && <span className="field-error">{validationErrors.email}</span>}
+                <div className="input-wrapper">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="your.email@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={validationErrors.email ? 'error' : ''}
+                  />
+                  <div className="input-glow"></div>
+                </div>
+                {validationErrors.email && (
+                  <span className="field-error">{validationErrors.email}</span>
+                )}
               </div>
 
-              <div className="form-group">
+              <div className="input-group-futuristic">
                 <label>Username *</label>
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Choose a unique username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  className={validationErrors.username ? 'error' : ''}
-                  required
-                />
-                {validationErrors.username && <span className="field-error">{validationErrors.username}</span>}
+                <div className="input-wrapper">
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Choose a unique username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className={validationErrors.username ? 'error' : ''}
+                  />
+                  <div className="input-glow"></div>
+                </div>
+                {validationErrors.username && (
+                  <span className="field-error">{validationErrors.username}</span>
+                )}
                 <small className="field-hint">Letters, numbers, and underscores only. Min 3 characters.</small>
               </div>
 
-              <div className="form-group">
+              <div className="input-group-futuristic">
                 <label>Password *</label>
-                <div className="password-input-wrapper">
+                <div className="password-wrapper-futuristic">
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -351,52 +400,41 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     className={validationErrors.password ? 'error' : ''}
-                    required
                   />
                   <button
                     type="button"
-                    className="password-toggle-btn"
+                    className="password-toggle-futuristic"
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? '👁️' : '👁️‍🗨️'}
                   </button>
+                  <div className="input-glow"></div>
                 </div>
                 {formData.password && (
-                  <div style={{
-                    marginTop: '0.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}>
-                    <div style={{
-                      flex: 1,
-                      height: '4px',
-                      background: 'rgba(30, 41, 59, 0.5)',
-                      borderRadius: '2px',
-                      overflow: 'hidden'
-                    }}>
-                      <div style={{
-                        height: '100%',
-                        width: `${(passwordStrength / 5) * 100}%`,
-                        background: getPasswordStrengthColor(),
-                        transition: 'all 0.3s ease'
-                      }}></div>
+                  <div className="password-strength-indicator">
+                    <div className="strength-bar">
+                      <div 
+                        className="strength-fill"
+                        style={{
+                          width: `${(passwordStrength / 5) * 100}%`,
+                          background: getPasswordStrengthColor()
+                        }}
+                      ></div>
                     </div>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      color: getPasswordStrengthColor(),
-                      fontWeight: 600
-                    }}>{getPasswordStrengthLabel()}</span>
+                    <span style={{ color: getPasswordStrengthColor() }}>
+                      {getPasswordStrengthLabel()}
+                    </span>
                   </div>
                 )}
-                {validationErrors.password && <span className="field-error">{validationErrors.password}</span>}
-                <small className="field-hint">Use uppercase, lowercase, numbers & symbols for better security.</small>
+                {validationErrors.password && (
+                  <span className="field-error">{validationErrors.password}</span>
+                )}
+                <small className="field-hint">Use uppercase, lowercase, numbers & symbols.</small>
               </div>
 
-              <div className="form-group">
+              <div className="input-group-futuristic">
                 <label>Confirm Password *</label>
-                <div className="password-input-wrapper">
+                <div className="password-wrapper-futuristic">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
@@ -404,61 +442,54 @@ const Register = () => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className={validationErrors.confirmPassword ? 'error' : ''}
-                    required
                   />
                   <button
                     type="button"
-                    className="password-toggle-btn"
+                    className="password-toggle-futuristic"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
                     {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
                   </button>
+                  <div className="input-glow"></div>
                 </div>
-                {validationErrors.confirmPassword && <span className="field-error">{validationErrors.confirmPassword}</span>}
+                {validationErrors.confirmPassword && (
+                  <span className="field-error">{validationErrors.confirmPassword}</span>
+                )}
               </div>
 
               {error && (
-                <div className="response-error">
-                  <div className="response-icon">!</div>
-                  <div className="response-content">
-                    <p>{error}</p>
-                  </div>
+                <div className="alert-futuristic error-alert">
+                  <span className="alert-icon">⚠️</span>
+                  <span>{error}</span>
                 </div>
               )}
               
               {success && (
-                <div className="response-success">
-                  <div className="response-icon">✓</div>
-                  <div className="response-content">
-                    <p>{success}</p>
-                  </div>
+                <div className="alert-futuristic success-alert">
+                  <span className="alert-icon">✓</span>
+                  <span>{success}</span>
                 </div>
               )}
 
-              <button type="submit" className="post-button" disabled={isLoading}>
-                {isLoading ? <span className="spinner"></span> : 'Create Account'}
+              <button type="submit" className="submit-btn-futuristic" disabled={isLoading}>
+                <div className="btn-glow"></div>
+                {isLoading ? (
+                  <div className="loading-spinner"></div>
+                ) : (
+                  <>
+                    Create Account
+                    <span className="btn-arrow">→</span>
+                  </>
+                )}
               </button>
             </form>
 
-            <p style={{ 
-              marginTop: '1.5rem', 
-              textAlign: 'center', 
-              fontSize: '0.875rem',
-              color: isDarkMode ? 'var(--gray-400)' : 'var(--gray-600)'
-            }}>
-              Already have an account?{' '}
-              <a 
-                href="/login" 
-                style={{ 
-                  color: isDarkMode ? 'var(--primary-white)' : 'var(--primary-black)',
-                  fontWeight: 'bold', 
-                  textDecoration: 'none' 
-                }}
-              >
-                Login here
-              </a>
-            </p>
+            <div className="form-footer-futuristic">
+              <p>
+                Already have an account?
+                <a href="/login">Login here</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>

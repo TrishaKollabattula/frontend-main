@@ -17,20 +17,16 @@ const Login = ({ onLogin }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
-  const [showAbout, setShowAbout] = useState(false);
-  const [showContact, setShowContact] = useState(false);
   const navigate = useNavigate();
 
-  // Move phrases outside component or use useMemo to memoize it
   const phrases = useMemo(() => [
-    'Generate Content Instantly',
+    'Generates Content',
     'Post to Multiple Platforms',
-    'Schedule Smart Campaigns',
+    'Smart Schedulers',
     'Boost Your Engagement',
     'Automate Your Marketing'
   ], []);
 
-  // Auto-typing animation effect
   useEffect(() => {
     const handleType = () => {
       const current = loopNum % phrases.length;
@@ -149,7 +145,6 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="futuristic-login-container">
-      {/* Animated Background */}
       <div className="cyber-grid"></div>
       <div className="floating-particles">
         {[...Array(20)].map((_, i) => (
@@ -157,231 +152,17 @@ const Login = ({ onLogin }) => {
         ))}
       </div>
 
-      {/* Theme Toggle */}
       <button className="theme-toggle-futuristic" onClick={toggleTheme}>
         {isDarkMode ? '☀️' : '🌙'}
       </button>
 
-      {/* Header Navigation */}
       <nav className="header-nav">
-        <a href="#home" className="nav-link active">Home</a>
-        <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); setShowAbout(true); }}>About</a>
-        <a href="#contact" className="nav-link" onClick={(e) => { e.preventDefault(); setShowContact(true); }}>Contact</a>
+        <a href="#home" className="nav-link">Home</a>
+        <a href="#about" className="nav-link">About</a>
+        <a href="#contact" className="nav-link">Contact</a>
       </nav>
 
-      {/* About Modal */}
-      {showAbout && (
-        <div className="modal-overlay" onClick={() => setShowAbout(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowAbout(false)}>×</button>
-            <div className="modal-header">
-              <h2>About Marketing Bot</h2>
-              <p>Your AI-Powered Social Media Automation Platform</p>
-            </div>
-            <div className="modal-body">
-              <p>
-                Marketing Bot is a cutting-edge AI-powered platform designed to revolutionize the way businesses manage their social media presence. We combine advanced artificial intelligence with seamless platform integrations to deliver unprecedented marketing automation capabilities.
-              </p>
-              
-              <h3>🎯 Our Mission</h3>
-              <p>
-                To empower businesses of all sizes to harness the power of AI for creating, scheduling, and managing their social media content across multiple platforms effortlessly.
-              </p>
-              
-              <h3>✨ Key Features</h3>
-              <ul>
-                <li>AI-powered content generation for stunning visuals and engaging captions</li>
-                <li>Seamless integration with LinkedIn, Instagram, and Facebook</li>
-                <li>Intelligent scheduling and automated posting</li>
-                <li>Real-time analytics and performance insights</li>
-                <li>Smart campaign management and optimization</li>
-                <li>Multi-platform content adaptation</li>
-              </ul>
-              
-              <h3>🚀 Why Choose Us</h3>
-              <p>
-                With Marketing Bot, you're not just getting a tool – you're getting a strategic partner in your digital marketing journey. Our platform leverages state-of-the-art AI technology to help you create compelling content, save time, and achieve better results across all your social media channels.
-              </p>
-              
-              <p>
-                Join thousands of businesses already transforming their social media strategy with Marketing Bot.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Contact Modal */}
-      {showContact && (
-        <div className="modal-overlay" onClick={() => setShowContact(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowContact(false)}>×</button>
-            <div className="modal-header">
-              <h2>Get In Touch</h2>
-              <p>We'd love to hear from you!</p>
-            </div>
-            <div className="modal-body">
-              <p>
-                Have questions about Marketing Bot? Want to learn more about our services? Our team is here to help you succeed.
-              </p>
-              
-              <div className="contact-info">
-                <div className="contact-item">
-                  <div className="contact-icon">📧</div>
-                  <div className="contact-details">
-                    <div className="contact-label">Email Us</div>
-                    <div className="contact-value">
-                      <a href="mailto:craftingbrain@gmail.com">craftingbrain@gmail.com</a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="contact-item">
-                  <div className="contact-icon">🌐</div>
-                  <div className="contact-details">
-                    <div className="contact-label">Company</div>
-                    <div className="contact-value">Inikola Technologies</div>
-                  </div>
-                </div>
-                
-                <div className="contact-item">
-                  <div className="contact-icon">⏰</div>
-                  <div className="contact-details">
-                    <div className="contact-label">Response Time</div>
-                    <div className="contact-value">Within 24 hours</div>
-                  </div>
-                </div>
-              </div>
-              
-              <h3>💬 What We Can Help With</h3>
-              <ul>
-                <li>Platform demos and walkthroughs</li>
-                <li>Technical support and troubleshooting</li>
-                <li>Feature requests and feedback</li>
-                <li>Enterprise solutions and pricing</li>
-                <li>Integration assistance</li>
-                <li>General inquiries</li>
-              </ul>
-              
-              <p style={{marginTop: '2rem', textAlign: 'center', color: 'var(--text-secondary)'}}>
-                We're committed to providing exceptional support and ensuring your success with Marketing Bot.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header Navigation */}
-      <nav className="header-nav">
-        <a href="#home" className="nav-link active">Home</a>
-        <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); setShowAbout(true); }}>About</a>
-        <a href="#contact" className="nav-link" onClick={(e) => { e.preventDefault(); setShowContact(true); }}>Contact</a>
-      </nav>
-
-      {/* About Modal */}
-      {showAbout && (
-        <div className="modal-overlay" onClick={() => setShowAbout(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowAbout(false)}>×</button>
-            <div className="modal-header">
-              <h2>About Marketing Bot</h2>
-              <p>Your AI-Powered Social Media Automation Platform</p>
-            </div>
-            <div className="modal-body">
-              <p>
-                Marketing Bot is a cutting-edge AI-powered platform designed to revolutionize the way businesses manage their social media presence. We combine advanced artificial intelligence with seamless platform integrations to deliver unprecedented marketing automation capabilities.
-              </p>
-              
-              <h3>🎯 Our Mission</h3>
-              <p>
-                To empower businesses of all sizes to harness the power of AI for creating, scheduling, and managing their social media content across multiple platforms effortlessly.
-              </p>
-              
-              <h3>✨ Key Features</h3>
-              <ul>
-                <li>AI-powered content generation for stunning visuals and engaging captions</li>
-                <li>Seamless integration with LinkedIn, Instagram, and Facebook</li>
-                <li>Intelligent scheduling and automated posting</li>
-                <li>Real-time analytics and performance insights</li>
-                <li>Smart campaign management and optimization</li>
-                <li>Multi-platform content adaptation</li>
-              </ul>
-              
-              <h3>🚀 Why Choose Us</h3>
-              <p>
-                With Marketing Bot, you're not just getting a tool – you're getting a strategic partner in your digital marketing journey. Our platform leverages state-of-the-art AI technology to help you create compelling content, save time, and achieve better results across all your social media channels.
-              </p>
-              
-              <p>
-                Join thousands of businesses already transforming their social media strategy with Marketing Bot.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Contact Modal */}
-      {showContact && (
-        <div className="modal-overlay" onClick={() => setShowContact(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowContact(false)}>×</button>
-            <div className="modal-header">
-              <h2>Get In Touch</h2>
-              <p>We'd love to hear from you!</p>
-            </div>
-            <div className="modal-body">
-              <p>
-                Have questions about Marketing Bot? Want to learn more about our services? Our team is here to help you succeed.
-              </p>
-              
-              <div className="contact-info">
-                <div className="contact-item">
-                  <div className="contact-icon">📧</div>
-                  <div className="contact-details">
-                    <div className="contact-label">Email Us</div>
-                    <div className="contact-value">
-                      <a href="mailto:craftingbrain@gmail.com">craftingbrain@gmail.com</a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="contact-item">
-                  <div className="contact-icon">🌐</div>
-                  <div className="contact-details">
-                    <div className="contact-label">Company</div>
-                    <div className="contact-value">Inikola Technologies</div>
-                  </div>
-                </div>
-                
-                <div className="contact-item">
-                  <div className="contact-icon">⏰</div>
-                  <div className="contact-details">
-                    <div className="contact-label">Response Time</div>
-                    <div className="contact-value">Within 24 hours</div>
-                  </div>
-                </div>
-              </div>
-              
-              <h3>💬 What We Can Help With</h3>
-              <ul>
-                <li>Platform demos and walkthroughs</li>
-                <li>Technical support and troubleshooting</li>
-                <li>Feature requests and feedback</li>
-                <li>Enterprise solutions and pricing</li>
-                <li>Integration assistance</li>
-                <li>General inquiries</li>
-              </ul>
-              
-              <p style={{marginTop: '2rem', textAlign: 'center', color: 'var(--text-secondary)'}}>
-                We're committed to providing exceptional support and ensuring your success with Marketing Bot.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="login-content-wrapper">
-        {/* Left Side - Hero Section */}
+      <div id="home" className="login-content-wrapper">
         <div className="hero-section">
           <div className="brand-header-futuristic">
             <div className="brand-presents">Inikola Presents</div>
@@ -397,7 +178,6 @@ const Login = ({ onLogin }) => {
             </div>
           </div>
 
-          {/* Auto-Typing Hero Text */}
           <div className="hero-typing-container">
             <h2 className="hero-title">
               <span className="gradient-text">{typedText}</span>
@@ -408,7 +188,6 @@ const Login = ({ onLogin }) => {
             </p>
           </div>
 
-          {/* Seamless Integrations Visualization */}
           <div className="integrations-section">
             <h3 className="section-title">
               <span className="icon-pulse">🔗</span> Seamless Integrations
@@ -440,7 +219,6 @@ const Login = ({ onLogin }) => {
             </div>
           </div>
 
-          {/* Features Grid */}
           <div className="features-futuristic">
             <div className="feature-card-futuristic">
               <div className="feature-icon-futuristic">🎨</div>
@@ -460,7 +238,6 @@ const Login = ({ onLogin }) => {
           </div>
         </div>
 
-        {/* Right Side - Login Form */}
         <div className="login-form-section">
           <div className="form-container-futuristic">
             <div className="form-header-futuristic">
@@ -574,6 +351,95 @@ const Login = ({ onLogin }) => {
           </div>
         </div>
       </div>
+
+      {/* About Section */}
+      <section id="about" className="info-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>About Marketing Bot</h2>
+            <p>Your AI-Powered Social Media Automation Platform</p>
+          </div>
+          <div className="section-content">
+            <p>
+              Marketing Bot is a cutting-edge AI-powered platform designed to revolutionize the way businesses manage their social media presence. We combine advanced artificial intelligence with seamless platform integrations to deliver unprecedented marketing automation capabilities.
+            </p>
+            
+            <h3>🎯 Our Mission</h3>
+            <p>
+              To empower businesses of all sizes to harness the power of AI for creating, scheduling, and managing their social media content across multiple platforms effortlessly.
+            </p>
+            
+            <h3>✨ Key Features</h3>
+            <ul>
+              <li>AI-powered content generation for stunning visuals and engaging captions</li>
+              <li>Seamless integration with LinkedIn, Instagram, and Facebook</li>
+              <li>Intelligent scheduling and automated posting</li>
+              <li>Real-time analytics and performance insights</li>
+              <li>Smart campaign management and optimization</li>
+              <li>Multi-platform content adaptation</li>
+            </ul>
+            
+            <h3>🚀 Why Choose Us</h3>
+            <p>
+              With Marketing Bot, you're not just getting a tool – you're getting a strategic partner in your digital marketing journey. Our platform leverages state-of-the-art AI technology to help you create compelling content, save time, and achieve better results across all your social media channels.
+            </p>
+            
+            <p>
+              Join thousands of businesses already transforming their social media strategy with Marketing Bot.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="info-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>Get In Touch</h2>
+            <p>We'd love to hear from you!</p>
+          </div>
+          <div className="section-content">
+            <p>
+              Have questions about Marketing Bot? Want to learn more about our services? Our team is here to help you succeed.
+            </p>
+            
+            <div className="contact-grid">
+              <div className="contact-card">
+                <div className="contact-card-icon">📧</div>
+                <div className="contact-card-label">Email Us</div>
+                <div className="contact-card-value">
+                  <a href="mailto:craftingbrain@gmail.com">craftingbrain@gmail.com</a>
+                </div>
+              </div>
+              
+              <div className="contact-card">
+                <div className="contact-card-icon">🌐</div>
+                <div className="contact-card-label">Company</div>
+                <div className="contact-card-value">Inikola Technologies</div>
+              </div>
+              
+              <div className="contact-card">
+                <div className="contact-card-icon">⏰</div>
+                <div className="contact-card-label">Response Time</div>
+                <div className="contact-card-value">Within 24 hours</div>
+              </div>
+            </div>
+            
+            <h3>💬 What We Can Help With</h3>
+            <ul>
+              <li>Platform demos and walkthroughs</li>
+              <li>Technical support and troubleshooting</li>
+              <li>Feature requests and feedback</li>
+
+              <li>General inquiries</li>
+            </ul>
+            
+            <p style={{marginTop: '2rem', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '1.125rem'}}>
+              We're committed to providing exceptional support and ensuring your success with Marketing Bot.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

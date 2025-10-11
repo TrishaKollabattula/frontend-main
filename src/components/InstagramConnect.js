@@ -1,5 +1,3 @@
-// Update your InstagramConnect.js with your real App ID
-// /src/InstagramConnect.js
 import React, { useState } from 'react';
 
 const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
@@ -7,15 +5,15 @@ const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
 
   const handleConnect = () => {
     setIsConnecting(true);
-    
+
     // Your actual Facebook App ID
     const clientId = '1095157869184608'; // Your real App ID
     const redirectUri = encodeURIComponent('https://13.233.45.167:5000/social/instagram/callback');
     const scope = encodeURIComponent('instagram_business_basic,instagram_manage_comments,instagram_business_manage_messages,pages_show_list,pages_read_engagement');
     const state = encodeURIComponent(appUser || 'random_state');
-    
+
     const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${state}`;
-    
+
     // Open popup for Instagram OAuth
     const popup = window.open(
       url,
@@ -28,16 +26,20 @@ const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
       if (event.data.type === 'instagram_callback') {
         setIsConnecting(false);
         popup.close();
-        
+
         if (event.data.success) {
           console.log('✅ Instagram connected:', event.data);
           alert(`Instagram connected successfully! @${event.data.username} (${event.data.account_type})`);
+
+          // Save token and user ID to DynamoDB via backend API
+          saveInstagramData(event.data.access_token, event.data.user_id);
+          
           onConnected(); // Refresh status
         } else {
           console.error('❌ Instagram connection failed:', event.data.error);
           alert(`Instagram connection failed: ${event.data.error}`);
         }
-        
+
         window.removeEventListener('message', handleMessage);
       }
     };
@@ -54,6 +56,30 @@ const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
     }, 1000);
   };
 
+  const saveInstagramData = async (accessToken, userId) => {
+    try {
+      const response = await fetch('https://your-backend-api.com/save-instagram-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          access_token: accessToken,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        console.log('Successfully saved Instagram data to DynamoDB');
+      } else {
+        console.error('Failed to save Instagram data');
+      }
+    } catch (error) {
+      console.error('Error saving Instagram data:', error);
+    }
+  };
+
   const handleDisconnect = async () => {
     try {
       const response = await fetch('/social/instagram/disconnect', {
@@ -68,7 +94,7 @@ const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         alert('Instagram disconnected successfully!');
         onConnected(); // Refresh status
@@ -91,10 +117,10 @@ const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
 
   const getStatusText = () => {
     if (!connected) return null;
-    
+
     const detail = status?.detail;
     if (!detail) return 'Connected';
-    
+
     return (
       <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
         @{detail.username} ({detail.account_type})
@@ -105,7 +131,7 @@ const InstagramConnect = ({ appUser, onConnected, connected, status }) => {
 
   return (
     <div>
-      <button 
+      <button
         className={`connect-button ${connected ? 'connected' : 'disconnected'}`}
         onClick={connected ? handleDisconnect : handleConnect}
         disabled={isConnecting}
