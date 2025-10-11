@@ -200,7 +200,7 @@ const Connect = () => {
     <div className={`connect-container ${isDarkMode ? 'dark' : 'light'}`}>
       <header className="connect-header">
         <div className="header-left">
-          <img src="/123.jpg" alt="Logo" className="header-logo" />
+          <img src="/123.png" alt="Logo" className="header-logo" />
           <h1 className="header-title">Marketing Bot</h1>
         </div>
         

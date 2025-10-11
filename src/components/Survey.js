@@ -530,7 +530,7 @@ const Survey = () => {
 
       <div className="survey-box">
         <div className="survey-header">
-          <img src="/123.jpg" alt="Logo" className="survey-logo" />
+          <img src="/123.png" alt="Logo" className="survey-logo" />
           <h1 className="survey-title">Tell Us About Your Business</h1>
           <p className="survey-subtitle">Help us craft content that truly represents your brand</p>
           <div className="header-decoration"></div>

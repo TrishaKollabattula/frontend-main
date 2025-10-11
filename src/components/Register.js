@@ -267,7 +267,7 @@ const Register = () => {
         <div className="marketing-section">
           <div className="marketing-content">
             <div className="brand-section">
-              <img src="/123.jpg" alt="Marketing Bot Logo" className="marketing-logo" />
+              <img src="/123.png" alt="Marketing Bot Logo" className="marketing-logo" />
             </div>
             
             <h1 className="marketing-title">
