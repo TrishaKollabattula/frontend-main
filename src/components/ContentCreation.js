@@ -1,4 +1,4 @@
-//src/components/ContentCreation.js - Enhanced Version
+//src/components/ContentCreation.js - Futuristic Enhanced Version
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ContentCreation.css';
@@ -22,7 +22,12 @@ const ContentCreation = ({ user }) => {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') setIsDarkMode(true);
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
   }, []);
 
   const handlePlatformChange = (e) => {
@@ -38,11 +43,20 @@ const ContentCreation = ({ user }) => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
     localStorage.setItem('theme', newMode ? 'dark' : 'light');
+    
+    if (newMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await new Promise(resolve => setTimeout(resolve, 300));
     localStorage.removeItem('token');
-    window.location.reload();
+    localStorage.removeItem('tokenExpiry');
+    localStorage.removeItem('username');
+    window.location.href = '/login';
   };
 
   const validateForm = () => {
@@ -75,13 +89,13 @@ const ContentCreation = ({ user }) => {
             },
           }
         );
-        setResponseMessage('Content generated successfully!');
+        setResponseMessage('🎉 Content generated and posted successfully!');
         setIsError(false);
         setLastPayload(null);
         console.log('Backend Response:', response.data);
         setErrors({});
       } catch (err) {
-        setResponseMessage(err.response?.data?.error || 'Failed to generate content.');
+        setResponseMessage(err.response?.data?.error || 'Failed to generate content. Please try again.');
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -115,6 +129,7 @@ const ContentCreation = ({ user }) => {
       <div className="tech-words tech-word-3">{'{ ENGAGE }'}</div>
       <div className="tech-words tech-word-4">AI POWERED</div>
 
+      {/* Floating Icons */}
       <div className="extra-icons">
         <span className="icon1">🚀</span>
         <span className="icon2">🤖</span>
@@ -122,12 +137,14 @@ const ContentCreation = ({ user }) => {
         <span className="icon4">💡</span>
       </div>
 
+      {/* Theme Toggle */}
       <button className="theme-toggle top-left" onClick={toggleTheme}>
         {isDarkMode ? '☀️' : '🌙'}
       </button>
 
+      {/* Logout Button */}
       <button className="logout-button top-right" onClick={handleLogout}>
-        🚪 Logout
+        🚪
       </button>
 
       <div className="content-creation-box">
@@ -137,15 +154,18 @@ const ContentCreation = ({ user }) => {
           <div className="header-decoration"></div>
         </div>
 
-        {/* Engaging Info Card */}
+        {/* Enhanced Info Card */}
         <div className="info-card">
           <span className="info-card-icon">✨</span>
           <div className="info-card-text">
-            <strong>Create stunning content in seconds!</strong> Our AI analyzes your theme, 
-            generates professional visuals, and posts directly to your social platforms. 
-            <span style={{ display: 'block', marginTop: '0.5rem', opacity: 0.9 }}>
-              📈 10x faster than manual creation | 🎨 Professional quality guaranteed
-            </span>
+            <strong>Create Your Content with Just One Click!</strong>
+            Transform your ideas into stunning social media posts instantly. Our AI analyzes your theme, 
+            generates professional visuals, and publishes directly to your chosen platforms.
+            <div className="info-highlights">
+              <span className="info-highlight">⚡ Lightning Fast</span>
+              <span className="info-highlight">🎨 Pro Quality</span>
+              <span className="info-highlight">🚀 Auto-Post</span>
+            </div>
           </div>
         </div>
 
@@ -231,7 +251,14 @@ const ContentCreation = ({ user }) => {
 
           <div className="form-actions">
             <button type="submit" className="post-button" disabled={isLoading}>
-              {isLoading ? <span className="spinner"></span> : '🚀 Generate & Post'}
+              {isLoading ? (
+                <>
+                  <span className="spinner"></span>
+                  <span>Generating...</span>
+                </>
+              ) : (
+                '🚀 Generate & Post'
+              )}
             </button>
             <button type="button" className="reset-button" onClick={handleReset}>
               🔄 Reset
@@ -251,7 +278,14 @@ const ContentCreation = ({ user }) => {
                   onClick={() => handleSubmit(null, true)}
                   disabled={isLoading}
                 >
-                  {isLoading ? <span className="spinner"></span> : '🔄 Retry'}
+                  {isLoading ? (
+                    <>
+                      <span className="spinner"></span>
+                      <span>Retrying...</span>
+                    </>
+                  ) : (
+                    '🔄 Retry'
+                  )}
                 </button>
               )}
             </div>

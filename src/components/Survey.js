@@ -1,4 +1,4 @@
-//src/components/Survey.js - Fixed version with logo upload
+// src/components/Survey.js - Enhanced with futuristic effects
 import React, { useState, useEffect } from 'react';
 import './Survey.css';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ const Survey = () => {
   const [businessType, setBusinessType] = useState('');
   const [surveyAnswers, setSurveyAnswers] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [numColors, setNumColors] = useState(2);
@@ -17,10 +17,26 @@ const Survey = () => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
+  // Initialize theme
   useEffect(() => {
     const saved = localStorage.getItem('theme');
-    if (saved === 'dark') setIsDarkMode(true);
+    if (saved === 'light') {
+      setIsDarkMode(false);
+      document.body.classList.remove('dark');
+    } else {
+      setIsDarkMode(true);
+      document.body.classList.add('dark');
+    }
   }, []);
+
+  // Apply theme class to body
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   const toggleTheme = () => {
     const newMode = !isDarkMode;
@@ -39,7 +55,7 @@ const Survey = () => {
     { value: 'restaurant', label: 'Restaurant', icon: '🍽️', desc: 'Food & Dining' }
   ];
 
-  // Logo upload question that appears for all business types
+  // Logo upload question
   const logoQuestion = {
     id: 'business_logo',
     question: 'Upload your business logo (optional but recommended)',
@@ -50,7 +66,7 @@ const Survey = () => {
   };
 
   const commonQuestions = [
-    logoQuestion, // Logo upload as first common question
+    logoQuestion,
     { 
       id: 'contact_details', 
       question: 'Please provide your contact details for promotional image footers', 
@@ -155,6 +171,8 @@ const Survey = () => {
   const handleBusinessTypeSelect = (type) => {
     setBusinessType(type);
     setCurrentStep('questions');
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleAnswerChange = (questionId, value) => {
@@ -168,11 +186,9 @@ const Survey = () => {
     const count = parseInt(e.target.value, 10);
     setNumColors(count);
     
-    // Get existing colors or create new array
     const existingColors = surveyAnswers['color_theme'] || [];
     const colors = [];
     
-    // Fill with existing colors or default to black
     for (let i = 0; i < count; i++) {
       colors[i] = existingColors[i] || '#000000';
     }
@@ -181,43 +197,38 @@ const Survey = () => {
   };
 
   const handleColorChange = (index, value) => {
-    // Get existing colors or create array with default values
     const existingColors = surveyAnswers['color_theme'] || [];
     const colors = [];
     
-    // Ensure we have all colors filled
     for (let i = 0; i < numColors; i++) {
       colors[i] = existingColors[i] || '#000000';
     }
     
-    // Update the specific color
     colors[index] = value;
     handleAnswerChange('color_theme', colors);
   };
 
-  // Handle logo file selection
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'];
     if (!allowedTypes.includes(file.type)) {
       setError('Please upload a PNG, JPG, or SVG file');
+      setTimeout(() => setError(''), 3000);
       return;
     }
 
-    // Validate file size (5MB max)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       setError('Logo file size must be less than 5MB');
+      setTimeout(() => setError(''), 3000);
       return;
     }
 
     setLogoFile(file);
     
-    // Create preview URL
     const reader = new FileReader();
     reader.onloadend = () => {
       setLogoPreview(reader.result);
@@ -227,14 +238,12 @@ const Survey = () => {
     setError('');
   };
 
-  // Remove logo
   const handleRemoveLogo = () => {
     setLogoFile(null);
     setLogoPreview(null);
     handleAnswerChange('business_logo', null);
   };
 
-  // Convert logo to base64 for storage
   const convertLogoToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -249,7 +258,6 @@ const Survey = () => {
     setError('');
 
     try {
-      // CRITICAL: Get the registered userId (username) from localStorage
       const registeredUserId = localStorage.getItem('registeredUserId') || 
                               localStorage.getItem('username') || 
                               null;
@@ -258,11 +266,11 @@ const Survey = () => {
 
       if (!registeredUserId) {
         setError('Please complete registration first before submitting survey');
+        setTimeout(() => setError(''), 3000);
         setIsSubmitting(false);
         return;
       }
 
-      // Convert logo to base64 if uploaded
       let logoData = null;
       if (logoFile) {
         setUploadingLogo(true);
@@ -278,19 +286,19 @@ const Survey = () => {
         } catch (error) {
           console.error('Error converting logo:', error);
           setError('Failed to process logo. Continuing without it...');
+          setTimeout(() => setError(''), 3000);
         } finally {
           setUploadingLogo(false);
         }
       }
 
-      // Include logo in survey answers
       const finalAnswers = {
         ...surveyAnswers,
         business_logo: logoData
       };
 
       const surveyData = {
-        userId: registeredUserId, // This will be the username
+        userId: registeredUserId,
         businessType,
         answers: finalAnswers,
         timestamp: new Date().toISOString()
@@ -324,11 +332,12 @@ const Survey = () => {
       
       setTimeout(() => {
         navigate('/login');
-      }, 1500);
+      }, 2000);
 
     } catch (error) {
       console.error('Error processing survey:', error);
       setError('Error processing survey. Please try again.');
+      setTimeout(() => setError(''), 3000);
     } finally {
       setIsSubmitting(false);
       setUploadingLogo(false);
@@ -422,9 +431,9 @@ const Survey = () => {
       
       case 'multi-color':
         return (
-          <div>
-            <label style={{ fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>
-              Number of colors:
+          <div className="color-picker-section">
+            <label className="color-count-label">
+              Number of colors (2-5):
             </label>
             <input
               type="number"
@@ -432,31 +441,30 @@ const Survey = () => {
               max="5"
               value={numColors}
               onChange={handleNumColorsChange}
-              style={{ marginBottom: '1rem', width: '100px' }}
+              className="color-count-input"
             />
-            {Array.from({ length: numColors }, (_, index) => (
-              <div key={index} style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <label style={{ minWidth: '70px', fontSize: '0.875rem' }}>Color {index + 1}:</label>
-                <input
-                  type="color"
-                  value={(surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'}
-                  onChange={(e) => handleColorChange(index, e.target.value)}
-                  style={{ width: '60px', height: '40px' }}
-                />
-                <div
-                  style={{
-                    width: '80px',
-                    height: '40px',
-                    backgroundColor: (surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000',
-                    border: '2px solid var(--border-color)',
-                    borderRadius: '8px'
-                  }}
-                ></div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {(surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'}
-                </span>
-              </div>
-            ))}
+            <div className="color-inputs-grid">
+              {Array.from({ length: numColors }, (_, index) => (
+                <div key={index} className="color-input-row">
+                  <label className="color-label">Color {index + 1}:</label>
+                  <input
+                    type="color"
+                    value={(surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'}
+                    onChange={(e) => handleColorChange(index, e.target.value)}
+                    className="color-picker"
+                  />
+                  <div
+                    className="color-preview"
+                    style={{
+                      backgroundColor: (surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'
+                    }}
+                  ></div>
+                  <span className="color-hex">
+                    {(surveyAnswers['color_theme'] && surveyAnswers['color_theme'][index]) || '#000000'}
+                  </span>
+                </div>
+              ))}
+            </div>
             {question.hint && <small className="field-hint">{question.hint}</small>}
           </div>
         );
@@ -521,7 +529,7 @@ const Survey = () => {
 
   return (
     <div className={`survey-container ${isDarkMode ? 'dark' : 'light'}`}>
-      <button className="theme-toggle" onClick={toggleTheme}>
+      <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
         {isDarkMode ? '☀️' : '🌙'}
       </button>
       <button className="skip-button" onClick={() => navigate('/login')}>
@@ -530,7 +538,7 @@ const Survey = () => {
 
       <div className="survey-box">
         <div className="survey-header">
-          <img src="/123.png" alt="Logo" className="survey-logo" />
+          <img src="/123.png" alt="CraftingBrain Logo" className="survey-logo" />
           <h1 className="survey-title">Tell Us About Your Business</h1>
           <p className="survey-subtitle">Help us craft content that truly represents your brand</p>
           <div className="header-decoration"></div>
@@ -554,6 +562,7 @@ const Survey = () => {
                   key={type.value}
                   onClick={() => handleBusinessTypeSelect(type.value)}
                   className="business-card"
+                  aria-label={`Select ${type.label}`}
                 >
                   <span className="business-emoji">{type.icon}</span>
                   <h3>{type.label}</h3>
@@ -602,7 +611,10 @@ const Survey = () => {
               <div className="action-buttons">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep('business-type')}
+                  onClick={() => {
+                    setCurrentStep('business-type');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   className="btn-secondary"
                 >
                   ← Back
@@ -620,7 +632,10 @@ const Survey = () => {
                       {uploadingLogo ? 'Processing logo...' : 'Submitting...'}
                     </>
                   ) : (
-                    'Complete Survey'
+                    <>
+                      Complete Survey
+                      <span className="btn-arrow">→</span>
+                    </>
                   )}
                 </button>
               </div>

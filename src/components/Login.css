@@ -1,3 +1,4 @@
+/* // login.css */
 *:focus-visible {
   outline: 2px solid #ffffff;
   outline-offset: 2px;
@@ -486,18 +487,26 @@ body:not(.dark) .contact-card:hover {
 
 .brand-main {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  justify-content: center; /* Center the logo and text horizontally */
+  align-items: center; /* Center the logo and text vertically */
+  gap: 1rem;
+  margin-bottom: 3rem;
+  text-align: center;
 }
 
 .logo-container {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 120px; /* Fixed size to match logo */
+  height: 120px; /* Fixed size to match logo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Prevent the glow from overflowing the container */
 }
 
+
 .brand-logo-futuristic {
-  width: 90px;
+  width: 90px; /* Ensure the logo fits within the container */
   height: 90px;
   object-fit: contain;
   border-radius: 20px;
@@ -505,6 +514,7 @@ body:not(.dark) .contact-card:hover {
   z-index: 2;
   animation: logoFloat 3s ease-in-out infinite;
 }
+
 
 body.dark .brand-logo-futuristic {
   filter: drop-shadow(0 0 20px var(--cyber-blue));
@@ -524,13 +534,37 @@ body.dark .brand-logo-futuristic {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 120px;
-  height: 120px;
+  width: 150px; /* Adjusted size */
+  height: 150px; /* Adjusted size */
   background: radial-gradient(circle, var(--cyber-blue) 0%, transparent 70%);
   opacity: 0.3;
   animation: pulse 2s ease-in-out infinite;
   z-index: 1;
 }
+
+.platform-icon {
+  width: 70px;  /* Set the size of the icon */
+  height: 70px; /* Set the size of the icon */
+  background: var(--card-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 0 20px var(--color);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+.platform-icon img {
+  width: 100%;  /* Ensure the image takes up the full space */
+  height: 100%; /* Ensure the image takes up the full space */
+  object-fit: contain; /* Ensure the image maintains its aspect ratio */
+  border-radius: 50%;
+}
+
+
 
 @keyframes pulse {
   0%, 100% {
@@ -974,6 +1008,7 @@ body:not(.dark) .platform-name {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   background: rgba(30, 30, 30, 0.9);
 }
+
 
 .input-wrapper input::placeholder {
   color: rgba(160, 160, 160, 0.5);

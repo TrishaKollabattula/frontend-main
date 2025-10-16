@@ -1,4 +1,4 @@
-// src/Connect.js
+// src/Connect.js - Futuristic Version with Cyber Effects
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Connect.css';
@@ -10,6 +10,7 @@ const Connect = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [socialConnections, setSocialConnections] = useState({
     instagram: { connected: false, detail: null },
     linkedin: { connected: false, detail: null },
@@ -141,11 +142,20 @@ const Connect = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
     setShowProfileMenu(false);
+    
+    // Small delay for smooth transition
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Clear all authentication data
     localStorage.removeItem('token');
+    localStorage.removeItem('tokenExpiry');
     localStorage.removeItem('username');
-    navigate('/login', { replace: true });
+    
+    // Redirect to login page immediately
+    window.location.href = '/login';
   };
 
   const handleSocialConnect = (platform) => {
@@ -184,7 +194,7 @@ const Connect = () => {
       icon: '👥', 
       connected: socialConnections.facebook.connected, 
       color: '#1877F2',
-      component: FacebookConnect,  // ✅ Added Facebook component
+      component: FacebookConnect,
       detail: socialConnections.facebook.detail
     }
   ];
@@ -198,6 +208,16 @@ const Connect = () => {
 
   return (
     <div className={`connect-container ${isDarkMode ? 'dark' : 'light'}`}>
+      {/* Cyber Grid Background */}
+      <div className="cyber-grid"></div>
+      
+      {/* Floating Particles */}
+      <div className="floating-particles">
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="particle"></div>
+        ))}
+      </div>
+
       <header className="connect-header">
         <div className="header-left">
           <img src="/123.png" alt="Logo" className="header-logo" />
@@ -240,8 +260,8 @@ const Connect = () => {
                   ⚙️ Settings
                 </button>
                 <div className="profile-menu-divider"></div>
-                <button className="profile-menu-item logout" onClick={handleLogout}>
-                  🚪 Logout
+                <button className="profile-menu-item logout" onClick={handleLogout} disabled={isLoggingOut}>
+                  {isLoggingOut ? '⏳ Logging out...' : '🚪 Logout'}
                 </button>
               </div>
             )}
@@ -257,6 +277,40 @@ const Connect = () => {
             <p className="section-subtitle">
               Let's create amazing content for your {user?.businessType} business
             </p>
+            
+            {/* Stats Overview Cards */}
+            <div className="stats-overview">
+              <div className="stat-card">
+                <div className="stat-icon">📊</div>
+                <div className="stat-info">
+                  <div className="stat-value">{user?.postsCreated || 0}</div>
+                  <div className="stat-label">Total Posts</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">🔗</div>
+                <div className="stat-info">
+                  <div className="stat-value">
+                    {Object.values(socialConnections).filter(s => s.connected).length}/4
+                  </div>
+                  <div className="stat-label">Connected</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">⚡</div>
+                <div className="stat-info">
+                  <div className="stat-value">Active</div>
+                  <div className="stat-label">Status</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📅</div>
+                <div className="stat-info">
+                  <div className="stat-value">{user?.joinDate}</div>
+                  <div className="stat-label">Member Since</div>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section className="quick-actions-section">
@@ -293,9 +347,8 @@ const Connect = () => {
                   <div className="social-info">
                     <h4 className="social-name">{account.name}</h4>
                     <p className="social-status">
-                      {account.connected ? 'Connected' : 'Not connected'}
+                      {account.connected ? '✓ Connected' : 'Not connected'}
                     </p>
-                    {/* ✅ Show connection details for Facebook */}
                     {account.name === 'Facebook' && account.connected && account.detail && (
                       <p className="social-detail">
                         Page: {account.detail.page_name}

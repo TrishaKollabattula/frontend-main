@@ -138,9 +138,9 @@ const Login = ({ onLogin }) => {
   };
 
   const socialPlatforms = [
-    { name: 'LinkedIn', icon: '💼', color: '#0077B5' },
-    { name: 'Instagram', icon: '📷', color: '#E1306C' },
-    { name: 'Facebook', icon: '👥', color: '#1877F2' }
+    { name: 'LinkedIn', icon: '/images/linkedin.png', color: '#0077B5' },
+    { name: 'Instagram', icon: '/images/instagram.jpg', color: '#E1306C' },
+    { name: 'Facebook', icon: '/images/facebook.png', color: '#1877F2' }
   ];
 
   return (
@@ -211,7 +211,11 @@ const Login = ({ onLogin }) => {
                     '--color': platform.color
                   }}
                 >
-                  <div className="platform-icon">{platform.icon}</div>
+                  <a href={`https://${platform.name.toLowerCase()}.com`} target="_blank" rel="noopener noreferrer">
+                    <div className="platform-icon">
+                      <img src={platform.icon} alt={platform.name} />
+                    </div>
+                  </a>
                   <div className="platform-name">{platform.name}</div>
                   <div className="connection-line"></div>
                 </div>
