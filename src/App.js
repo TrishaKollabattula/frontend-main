@@ -1,3 +1,4 @@
+// src/App.js - UPDATED
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Login from "./components/Login";
@@ -7,6 +8,9 @@ import Survey from "./components/Survey";
 import UserProfile from "./components/UserProfile";
 import Connect from "./Connect";
 import Protected from "./routes/Protected";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import ContactUs from "./components/ContactUs";
+import About from "./components/About";
 
 // Helper
 const hasToken = () => !!localStorage.getItem("token");
@@ -25,6 +29,11 @@ const App = () => {
           element={hasToken() ? <Navigate to="/connect" replace /> : <Register />}
         />
         <Route path="/survey" element={<Survey />} />
+        
+        {/* New public pages */}
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/contact-us" element={<ContactUs />} />
 
         {/* Protected routes (single definition each) */}
         <Route
@@ -84,7 +93,8 @@ const App = () => {
           }
         />
 
-        {/* Default */}
+        {/* Default - Redirect to login for now, but you might want a landing page */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

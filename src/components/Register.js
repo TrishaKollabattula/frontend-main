@@ -1,7 +1,7 @@
-// src/components/Register.js - Complete Fixed Version
-import React, { useState, useEffect } from 'react';
+// src/components/Register.js - BLACK, MAROON & TEAL THEME
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import './Register.css';
-import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -14,25 +14,50 @@ const Register = () => {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [validationErrors, setValidationErrors] = useState({});
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(true);
+  const [typedText, setTypedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
   
   const navigate = useNavigate();
 
+  const phrases = useMemo(() => [
+    'Join the Revolution',
+    'Start Creating Content',
+    'Automate Your Marketing',
+    'Grow Your Business',
+    'AI-Powered Success'
+  ], []);
+
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const darkMode = saved === 'dark' || saved === null;
-    setIsDarkMode(darkMode);
-    
-    if (darkMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, []);
+    const handleType = () => {
+      const current = loopNum % phrases.length;
+      const fullText = phrases[current];
+
+      setTypedText(
+        isDeleting
+          ? fullText.substring(0, typedText.length - 1)
+          : fullText.substring(0, typedText.length + 1)
+      );
+
+      setTypingSpeed(isDeleting ? 30 : 100);
+
+      if (!isDeleting && typedText === fullText) {
+        setTimeout(() => setIsDeleting(true), 2000);
+      } else if (isDeleting && typedText === '') {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+      }
+    };
+
+    const timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [typedText, isDeleting, loopNum, typingSpeed, phrases]);
 
   useEffect(() => {
     if (formData.password) {
@@ -41,18 +66,6 @@ const Register = () => {
       setPasswordStrength(0);
     }
   }, [formData.password]);
-
-  const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem('theme', newMode ? 'dark' : 'light');
-    
-    if (newMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  };
 
   const calculatePasswordStrength = (password) => {
     let strength = 0;
@@ -73,10 +86,10 @@ const Register = () => {
   };
 
   const getPasswordStrengthColor = () => {
-    if (passwordStrength <= 2) return '#ef4444';
+    if (passwordStrength <= 2) return '#dc2626';
     if (passwordStrength <= 3) return '#f59e0b';
-    if (passwordStrength <= 4) return '#10b981';
-    return '#22d3ee';
+    if (passwordStrength <= 4) return '#059669';
+    return '#5a9c9c';
   };
 
   const handleInputChange = (e) => {
@@ -127,6 +140,13 @@ const Register = () => {
     }
 
     return errors;
+  };
+
+  const closeRegisterModal = () => {
+    setShowRegisterModal(false);
+    setError('');
+    setSuccess('');
+    navigate('/login');
   };
 
   const handleSubmit = async (e) => {
@@ -222,277 +242,459 @@ const Register = () => {
     }
   };
 
+  const socialPlatforms = [
+    { name: 'LinkedIn', icon: '/images/linkedin.png', color: '#0077B5' },
+    { name: 'Instagram', icon: '/images/instagram.jpg', color: '#E1306C' },
+    { name: 'Facebook', icon: '/images/facebook.png', color: '#1877F2' }
+  ];
+
+  const horizontalFeatures = [
+    {
+      icon: "🔗",
+      title: "Multi-Platform Integration",
+      description: "Connect to LinkedIn, Instagram, Facebook, Twitter, and more."
+    },
+    {
+      icon: "🤖",
+      title: "AI Content Creation",
+      description: "Generate engaging posts and stunning images using AI."
+    },
+    {
+      icon: "📤",
+      title: "Auto Posting",
+      description: "Schedule and publish content automatically."
+    }
+  ];
+
+  const navbarStyles = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    background: 'rgba(255, 255, 255, 0.98)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    borderBottom: '2px solid rgba(90, 156, 156, 0.2)',
+    padding: '1rem 2rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    zIndex: 10000,
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+    transition: 'all 0.3s ease'
+  };
+
+  const leftSectionStyles = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1.5rem',
+    flexShrink: 0
+  };
+
+  const logoStyles = {
+    width: '46px',
+    height: '46px',
+    borderRadius: '12px',
+    objectFit: 'cover',
+    background: 'linear-gradient(135deg, #6b2020 0%, #5a9c9c 100%)',
+    padding: '2px',
+    flexShrink: 0,
+    boxShadow: '0 4px 15px rgba(90, 156, 156, 0.3)'
+  };
+
+  const brandTextStyles = {
+    fontSize: '1.6rem',
+    fontWeight: 800,
+    background: 'linear-gradient(135deg, #6b2020 0%, #5a9c9c 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+    flexShrink: 0,
+    whiteSpace: 'nowrap'
+  };
+
+  const navLinksStyles = {
+    display: 'flex',
+    gap: '2.4rem',
+    alignItems: 'center',
+    flexShrink: 0
+  };
+
+  const navLinkStyles = {
+    color: '#4a4a4a',
+    textDecoration: 'none',
+    fontWeight: 600,
+    transition: 'color 0.25s ease',
+    whiteSpace: 'nowrap'
+  };
+
+  const registerButtonStyles = {
+    background: 'linear-gradient(135deg, #6b2020 0%, #5a9c9c 100%)',
+    color: '#fff',
+    border: 'none',
+    padding: '0.8rem 1.6rem',
+    borderRadius: '12px',
+    fontWeight: 700,
+    cursor: 'pointer',
+    transition: 'all 0.25s ease',
+    boxShadow: '0 4px 12px rgba(90, 156, 156, 0.3)',
+    whiteSpace: 'nowrap'
+  };
+
+  const modalOverlayStyles = {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.6)',
+    backdropFilter: 'blur(8px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: showRegisterModal ? 1 : 0,
+    visibility: showRegisterModal ? 'visible' : 'hidden',
+    transition: 'opacity 0.4s ease, visibility 0.4s ease',
+    zIndex: 9999
+  };
+
   return (
-    <div className="futuristic-register-container">
+    <div className="register-container">
       <div className="cyber-grid"></div>
 
+      <div className="geometric-bg">
+        <div className="shape"></div>
+        <div className="shape"></div>
+        <div className="shape"></div>
+        <div className="shape"></div>
+        <div className="shape"></div>
+      </div>
+          
       <div className="floating-particles">
         {[...Array(20)].map((_, i) => (
           <div key={i} className="particle"></div>
         ))}
       </div>
 
-      <button className="theme-toggle-futuristic" onClick={toggleTheme}>
-        {isDarkMode ? '☀️' : '🌙'}
-      </button>
+      {/* NAVBAR */}
+      <nav style={navbarStyles}>
+        <div style={leftSectionStyles}>
+          <img 
+            src="/123.png" 
+            alt="Posting Expert" 
+            style={logoStyles}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+          <span style={brandTextStyles}>Posting Expert</span>
+        </div>
+        
+        <div style={navLinksStyles}>
+          <Link to="/login" style={navLinkStyles}>Home</Link>
+          <Link to="/about" style={navLinkStyles}>About</Link>
+          <Link to="/privacy-policy" style={navLinkStyles}>Privacy Policy</Link>
+          <Link to="/contact-us" style={navLinkStyles}>Contact Us</Link>
+        </div>
 
-      <button className="back-to-login-btn" onClick={() => navigate('/login')}>
-        ← Back to Login
-      </button>
+        <div>
+          <button 
+            onClick={() => navigate('/login')}
+            type="button"
+            style={registerButtonStyles}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 8px 25px rgba(90, 156, 156, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 12px rgba(90, 156, 156, 0.3)';
+            }}
+          >
+            Back to Login
+          </button>
+        </div>
+      </nav>
 
-      <div className="register-content-wrapper">
-        <div className="hero-section">
-          <div className="brand-header-futuristic">
+      {/* REGISTER MODAL */}
+      <div style={modalOverlayStyles}>
+        <div className="modal-content">
+          <button className="modal-close" onClick={closeRegisterModal} type="button">✕</button>
+          
+          <div className="form-header">
+            <h2>Create Your Account</h2>
+            <p>Join thousands of successful marketers</p>
+          </div>
+
+          <form className="register-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>FULL NAME</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={validationErrors.name ? 'error' : ''}
+                autoComplete="off"
+                required
+              />
+              {validationErrors.name && (
+                <span className="field-error">{validationErrors.name}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>EMAIL ADDRESS</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="your.email@example.com"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={validationErrors.email ? 'error' : ''}
+                autoComplete="off"
+                required
+              />
+              {validationErrors.email && (
+                <span className="field-error">{validationErrors.email}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>USERNAME</label>
+              <input
+                type="text"
+                name="username"
+                placeholder="Choose a unique username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className={validationErrors.username ? 'error' : ''}
+                autoComplete="off"
+                required
+              />
+              {validationErrors.username && (
+                <span className="field-error">{validationErrors.username}</span>
+              )}
+              <small className="field-hint">Letters, numbers, and underscores only. Min 3 characters.</small>
+            </div>
+
+            <div className="form-group">
+              <label>PASSWORD</label>
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Create a strong password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className={validationErrors.password ? 'error' : ''}
+                  autoComplete="off"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {formData.password && (
+                <div className="password-strength-indicator">
+                  <div className="strength-bar">
+                    <div 
+                      className="strength-fill"
+                      style={{
+                        width: `${(passwordStrength / 5) * 100}%`,
+                        background: getPasswordStrengthColor()
+                      }}
+                    ></div>
+                  </div>
+                  <span style={{ color: getPasswordStrengthColor(), fontSize: '0.85rem', fontWeight: 600 }}>
+                    {getPasswordStrengthLabel()}
+                  </span>
+                </div>
+              )}
+              {validationErrors.password && (
+                <span className="field-error">{validationErrors.password}</span>
+              )}
+              <small className="field-hint">Use uppercase, lowercase, numbers & symbols.</small>
+            </div>
+
+            <div className="form-group">
+              <label>CONFIRM PASSWORD</label>
+              <div className="password-wrapper">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className={validationErrors.confirmPassword ? 'error' : ''}
+                  autoComplete="off"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {validationErrors.confirmPassword && (
+                <span className="field-error">{validationErrors.confirmPassword}</span>
+              )}
+            </div>
+
+            {error && (
+              <div className="alert alert-error">
+                <span className="alert-icon">⚠️</span>
+                <span>{error}</span>
+              </div>
+            )}
+            
+            {success && (
+              <div className="alert alert-success">
+                <span className="alert-icon">✓</span>
+                <span>{success}</span>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <>
+                  <span>CREATE ACCOUNT</span>
+                  <span className="btn-arrow">→</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="form-footer">
+            <p>
+              Already have an account?{' '}
+              <Link to="/login">Login here</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="content-wrapper">
+        <div className="hero">
+          <div className="brand-header">
+            <div className="brand-presents">Powered by Inikola Technologies</div>
             <div className="brand-main">
               <div className="logo-container">
-                <img src="/123.png" alt="Marketing Bot" className="brand-logo-futuristic" />
-                <div className="logo-glow"></div>
+                <img src="/123.png" alt="Posting Expert" className="brand-logo" />
+              </div>
+              <div className="brand-info">
+                <h1>Posting Expert</h1>
+                <p className="brand-tagline">AI-Powered Social Media Automation</p>
               </div>
             </div>
           </div>
 
           <div className="hero-typing-container">
-            <h1 className="hero-title">
-              <span className="gradient-text">START YOUR MARKETING REVOLUTION</span>
-            </h1>
+            <h2 className="hero-title">
+              <span className="gradient-text">{typedText}</span>
+              <span className="cursor-blink">|</span>
+            </h2>
             <p className="hero-subtitle">
-              Transform your business with the power of AI. Join 1000+ forward-thinking entrepreneurs 
-              who are already dominating social media.
+              Transform your social media strategy with cutting-edge AI technology. 
+              Generate stunning content, schedule posts, and grow your presence.
             </p>
           </div>
 
-          {/* Integrations Section with Orbit Animation */}
+          <div className="horizontal-features-section">
+            <h3 className="section-title">
+              <span className="icon-pulse">🚀</span> Powerful Features
+            </h3>
+            <p className="section-subtitle">Everything you need to automate your marketing</p>
+            
+            <div className="horizontal-features-container">
+              <div className="horizontal-features-scroll">
+                {horizontalFeatures.map((feature, index) => (
+                  <div key={index} className="card horizontal-feature-card">
+                    <div className="horizontal-feature-icon">
+                      {feature.icon}
+                    </div>
+                    <h4>{feature.title}</h4>
+                    <p>{feature.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="integrations-section">
             <h3 className="section-title">
-              <span className="icon-pulse">🔗</span>
-              Connect Your Platforms
+              <span className="icon-pulse">🔗</span> Seamless Integrations
             </h3>
-            <p className="section-subtitle">Seamlessly integrate with your favorite social media channels</p>
-
+            <p className="section-subtitle">Connect with your favorite platforms instantly</p>
+            
             <div className="platforms-orbit">
               <div className="orbit-center">
                 <div className="center-logo">🤖</div>
                 <div className="pulse-ring"></div>
                 <div className="pulse-ring-2"></div>
               </div>
-
-              <div className="platform-node" style={{"--index": 0, "--color": "#E4405F"}}>
-                <div className="connection-line" style={{background: "linear-gradient(to bottom, #E4405F, transparent)"}}></div>
-                <div className="platform-icon" style={{"--color": "#E4405F"}}>
-                  📷
-                </div>
-                <span className="platform-name">Instagram</span>
-              </div>
-
-              <div className="platform-node" style={{"--index": 1, "--color": "#0A66C2"}}>
-                <div className="connection-line" style={{background: "linear-gradient(to bottom, #0A66C2, transparent)"}}></div>
-                <div className="platform-icon" style={{"--color": "#0A66C2"}}>
-                  💼
-                </div>
-                <span className="platform-name">LinkedIn</span>
-              </div>
-
-              <div className="platform-node" style={{"--index": 2, "--color": "#1DA1F2"}}>
-                <div className="connection-line" style={{background: "linear-gradient(to bottom, #1DA1F2, transparent)"}}></div>
-                <div className="platform-icon" style={{"--color": "#1DA1F2"}}>
-                  🐦
-                </div>
-                <span className="platform-name">Facebook</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Features Section */}
-          <div className="features-futuristic">
-            <div className="feature-card-futuristic">
-              <div className="feature-icon-futuristic">⚡</div>
-              <h4>AI-Powered</h4>
-              <p>Generate content using advanced AI technology</p>
-            </div>
-            <div className="feature-card-futuristic">
-              <div className="feature-icon-futuristic">📊</div>
-              <h4>Analytics</h4>
-              <p>Track performance across all platforms</p>
-            </div>
-            <div className="feature-card-futuristic">
-              <div className="feature-icon-futuristic">🚀</div>
-              <h4>Auto-Post</h4>
-              <p>Schedule and publish automatically</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="register-form-section">
-          <div className="form-container-futuristic">
-            <div className="form-header-futuristic">
-              <h2>Create Your Account</h2>
-              <p>Start your free journey today</p>
-            </div>
-
-            <div className="info-card-futuristic">
-              <span>ℹ️</span>
-              <p>After registration, complete a quick survey to personalize your content.</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="futuristic-form">
-              <div className="input-group-futuristic">
-                <label>Full Name *</label>
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={validationErrors.name ? 'error' : ''}
-                  />
-                  <div className="input-glow"></div>
-                </div>
-                {validationErrors.name && (
-                  <span className="field-error">{validationErrors.name}</span>
-                )}
-              </div>
-
-              <div className="input-group-futuristic">
-                <label>Email Address *</label>
-                <div className="input-wrapper">
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="your.email@example.com"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={validationErrors.email ? 'error' : ''}
-                  />
-                  <div className="input-glow"></div>
-                </div>
-                {validationErrors.email && (
-                  <span className="field-error">{validationErrors.email}</span>
-                )}
-              </div>
-
-              <div className="input-group-futuristic">
-                <label>Username *</label>
-                <div className="input-wrapper">
-                  <input
-                    type="text"
-                    name="username"
-                    placeholder="Choose a unique username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className={validationErrors.username ? 'error' : ''}
-                  />
-                  <div className="input-glow"></div>
-                </div>
-                {validationErrors.username && (
-                  <span className="field-error">{validationErrors.username}</span>
-                )}
-                <small className="field-hint">Letters, numbers, and underscores only. Min 3 characters.</small>
-              </div>
-
-              <div className="input-group-futuristic">
-                <label>Password *</label>
-                <div className="password-wrapper-futuristic">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Create a strong password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={validationErrors.password ? 'error' : ''}
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle-futuristic"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? '👁️' : '👁️‍🗨️'}
-                  </button>
-                  <div className="input-glow"></div>
-                </div>
-                {formData.password && (
-                  <div className="password-strength-indicator">
-                    <div className="strength-bar">
-                      <div 
-                        className="strength-fill"
-                        style={{
-                          width: `${(passwordStrength / 5) * 100}%`,
-                          background: getPasswordStrengthColor()
-                        }}
-                      ></div>
-                    </div>
-                    <span style={{ color: getPasswordStrengthColor() }}>
-                      {getPasswordStrengthLabel()}
-                    </span>
-                  </div>
-                )}
-                {validationErrors.password && (
-                  <span className="field-error">{validationErrors.password}</span>
-                )}
-                <small className="field-hint">Use uppercase, lowercase, numbers & symbols.</small>
-              </div>
-
-              <div className="input-group-futuristic">
-                <label>Confirm Password *</label>
-                <div className="password-wrapper-futuristic">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className={validationErrors.confirmPassword ? 'error' : ''}
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle-futuristic"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                  </button>
-                  <div className="input-glow"></div>
-                </div>
-                {validationErrors.confirmPassword && (
-                  <span className="field-error">{validationErrors.confirmPassword}</span>
-                )}
-              </div>
-
-              {error && (
-                <div className="alert-futuristic error-alert">
-                  <span className="alert-icon">⚠️</span>
-                  <span>{error}</span>
-                </div>
-              )}
               
-              {success && (
-                <div className="alert-futuristic success-alert">
-                  <span className="alert-icon">✓</span>
-                  <span>{success}</span>
+              {socialPlatforms.map((platform, index) => (
+                <div 
+                  key={platform.name}
+                  className="platform-node"
+                  style={{
+                    '--index': index,
+                    '--total': socialPlatforms.length,
+                    '--color': platform.color
+                  }}
+                >
+                  <a href={`https://${platform.name.toLowerCase()}.com`} target="_blank" rel="noopener noreferrer">
+                    <div className="platform-icon">
+                      <img src={platform.icon} alt={platform.name} />
+                    </div>
+                  </a>
+                  <div className="platform-name">{platform.name}</div>
                 </div>
-              )}
-
-              <button type="submit" className="submit-btn-futuristic" disabled={isLoading}>
-                <div className="btn-glow"></div>
-                {isLoading ? (
-                  <div className="loading-spinner"></div>
-                ) : (
-                  <>
-                    Create Account
-                    <span className="btn-arrow">→</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="form-footer-futuristic">
-              <p>
-                Already have an account?
-                <a href="/login">Login here</a>
-              </p>
+              ))}
             </div>
           </div>
         </div>
       </div>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h4>Posting Expert</h4>
+            <p>AI-Powered Social Media Automation</p>
+            <p className="footer-tagline">Built by Inikola × CraftingBrain</p>
+          </div>
+          <div className="footer-section">
+            <h4>Quick Links</h4>
+            <Link to="/login">Home</Link>
+            <Link to="/about">About</Link>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+            <Link to="/contact-us">Contact Us</Link>
+          </div>
+          <div className="footer-section">
+            <h4>Connect</h4>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>© 2025 Posting Expert. All rights reserved. | Powered by Inikola Technologies & CraftingBrain</p>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-// profile.js - Complete Fix
 import React, { useState, useEffect, useRef } from 'react';
 import './UserProfile.css';
 
@@ -19,7 +18,10 @@ const UserProfile = () => {
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [businessLogo, setBusinessLogo] = useState(null);
+  const [businessLogoPreview, setBusinessLogoPreview] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const fileInputRef = useRef(null);
+  const logoInputRef = useRef(null);
 
   const API_BASE_URL = 'http://13.233.45.167:5000';
 
@@ -62,7 +64,6 @@ const UserProfile = () => {
       console.log('Profile data:', data);
       setUserData(data);
       
-      // Parse color_theme if it's a string
       let colorTheme = data.color_theme || [];
       if (typeof colorTheme === 'string' && colorTheme !== 'Not set') {
         try {
@@ -74,9 +75,8 @@ const UserProfile = () => {
         colorTheme = [];
       }
       
-      // Set business logo if available
       if (data.has_logo && data.logo_s3_url) {
-        setBusinessLogo(data.logo_s3_url);
+        setBusinessLogoPreview(data.logo_s3_url);
       }
       
       setEditForm({
@@ -96,7 +96,6 @@ const UserProfile = () => {
 
   const handleEditToggle = () => {
     if (isEditing) {
-      // Parse color_theme again when canceling
       let colorTheme = userData.color_theme || [];
       if (typeof colorTheme === 'string' && colorTheme !== 'Not set') {
         try {
@@ -117,6 +116,8 @@ const UserProfile = () => {
       });
       setProfileImage(null);
       setProfileImagePreview(null);
+      setBusinessLogo(null);
+      setBusinessLogoPreview(userData.logo_s3_url || null);
     }
     setIsEditing(!isEditing);
   };
@@ -159,14 +160,12 @@ const UserProfile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
       alert('Please upload a PNG or JPG file');
       return;
     }
 
-    // Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       alert('Image size must be less than 5MB');
@@ -175,10 +174,34 @@ const UserProfile = () => {
 
     setProfileImage(file);
     
-    // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setProfileImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleLogoSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a PNG or JPG file for logo');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('Logo size must be less than 5MB');
+      return;
+    }
+
+    setBusinessLogo(file);
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setBusinessLogoPreview(reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -259,7 +282,7 @@ const UserProfile = () => {
         }
       }
       
-      // Prepare profile update data
+      // Prepare profile update data (name and email only)
       const profileUpdateData = {};
       if (editForm.name !== userData.name) {
         profileUpdateData.name = editForm.name;
@@ -267,17 +290,19 @@ const UserProfile = () => {
       if (editForm.email !== userData.email) {
         profileUpdateData.email = editForm.email;
       }
-      if (editForm.business_type !== userData.business_type) {
-        profileUpdateData.business_type = editForm.business_type;
-      }
 
-      // Prepare preferences update data
+      // Prepare preferences update data (business_type, scheduled_time, color_theme, logo)
       const preferencesUpdateData = {};
+      
+      // Business type goes to preferences/survey
+      if (editForm.business_type !== userData.business_type) {
+        preferencesUpdateData.business_type = editForm.business_type;
+      }
+      
       if (editForm.scheduled_time !== userData.scheduled_time && editForm.scheduled_time !== '') {
         preferencesUpdateData.scheduled_time = editForm.scheduled_time;
       }
       
-      // Handle color_theme array
       let currentColorTheme = userData.color_theme || [];
       if (typeof currentColorTheme === 'string' && currentColorTheme !== 'Not set') {
         try {
@@ -291,6 +316,31 @@ const UserProfile = () => {
       
       if (JSON.stringify(editForm.color_theme) !== JSON.stringify(currentColorTheme)) {
         preferencesUpdateData.color_theme = editForm.color_theme;
+      }
+
+      // Handle logo upload
+      if (businessLogo) {
+        setUploadingLogo(true);
+        try {
+          const reader = new FileReader();
+          const logoData = await new Promise((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(businessLogo);
+          });
+
+          preferencesUpdateData.logo_data = {
+            data: logoData,
+            fileName: businessLogo.name,
+            fileType: businessLogo.type,
+            fileSize: businessLogo.size
+          };
+        } catch (err) {
+          console.error('Failed to process logo:', err);
+          alert('Failed to process logo: ' + err.message);
+        } finally {
+          setUploadingLogo(false);
+        }
       }
 
       // Update profile if there are changes
@@ -311,6 +361,7 @@ const UserProfile = () => {
 
       // Update preferences if there are changes
       if (Object.keys(preferencesUpdateData).length > 0) {
+        console.log('Updating preferences with:', preferencesUpdateData);
         const preferencesResponse = await fetch(`${API_BASE_URL}/user/preferences`, {
           method: 'PUT',
           headers: {
@@ -321,7 +372,8 @@ const UserProfile = () => {
         });
 
         if (!preferencesResponse.ok) {
-          throw new Error('Failed to update preferences');
+          const errorData = await preferencesResponse.json();
+          throw new Error(errorData.error || 'Failed to update preferences');
         }
       }
       
@@ -330,6 +382,7 @@ const UserProfile = () => {
       setIsEditing(false);
       setProfileImage(null);
       setProfileImagePreview(null);
+      setBusinessLogo(null);
       
     } catch (err) {
       alert('Error updating profile: ' + err.message);
@@ -363,7 +416,6 @@ const UserProfile = () => {
     );
   }
 
-  // Parse color_theme for display
   let displayColorTheme = userData.color_theme || [];
   if (typeof displayColorTheme === 'string' && displayColorTheme !== 'Not set') {
     try {
@@ -406,7 +458,7 @@ const UserProfile = () => {
         <button 
           className="edit-profile-btn"
           onClick={handleEditToggle}
-          disabled={saveLoading || uploadingImage}
+          disabled={saveLoading || uploadingImage || uploadingLogo}
         >
           {isEditing ? 'Cancel' : 'Edit Profile'}
         </button>
@@ -520,15 +572,52 @@ const UserProfile = () => {
         </div>
       </div>
 
-      {businessLogo && (
-        <div className="business-logo-section">
-          <h3>Business Logo</h3>
+      <div className="business-logo-section">
+        <h3>Business Logo</h3>
+        {isEditing ? (
+          <div className="logo-upload-area">
+            <div 
+              className="logo-preview-box" 
+              onClick={() => logoInputRef.current?.click()}
+            >
+              {businessLogoPreview ? (
+                <img src={businessLogoPreview} alt="Business Logo" className="logo-preview-image" />
+              ) : (
+                <div className="logo-placeholder">
+                  <span className="upload-icon">📷</span>
+                  <p>Click to upload logo</p>
+                </div>
+              )}
+            </div>
+            <input
+              ref={logoInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg"
+              onChange={handleLogoSelect}
+              style={{ display: 'none' }}
+            />
+            {businessLogoPreview && (
+              <button 
+                type="button"
+                className="remove-logo-btn"
+                onClick={() => {
+                  setBusinessLogo(null);
+                  setBusinessLogoPreview(null);
+                }}
+              >
+                Remove Logo
+              </button>
+            )}
+          </div>
+        ) : businessLogoPreview ? (
           <div className="logo-display">
-            <img src={businessLogo} alt="Business Logo" />
+            <img src={businessLogoPreview} alt="Business Logo" />
             <p>{userData.logo_filename || 'Your business logo'}</p>
           </div>
-        </div>
-      )}
+        ) : (
+          <p>No logo uploaded</p>
+        )}
+      </div>
 
       <div className="profile-details">
         <h3>Profile Details</h3>
@@ -577,9 +666,9 @@ const UserProfile = () => {
           <button 
             className="save-btn" 
             onClick={handleSaveProfile}
-            disabled={saveLoading || uploadingImage}
+            disabled={saveLoading || uploadingImage || uploadingLogo}
           >
-            {uploadingImage ? 'Uploading Image...' : saveLoading ? 'Saving...' : 'Save Changes'}
+            {uploadingLogo ? 'Uploading Logo...' : uploadingImage ? 'Uploading Image...' : saveLoading ? 'Saving...' : 'Save Changes'}
           </button>
         )}
       </div>

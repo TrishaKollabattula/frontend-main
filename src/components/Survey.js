@@ -38,11 +38,11 @@ const Survey = () => {
     }
   }, [isDarkMode]);
 
-  const toggleTheme = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem('theme', newMode ? 'dark' : 'light');
-  };
+  // const toggleTheme = () => {
+  //   const newMode = !isDarkMode;
+  //   setIsDarkMode(newMode);
+  //   localStorage.setItem('theme', newMode ? 'dark' : 'light');
+  // };
 
   const businessTypes = [
     { value: 'other', label: 'Other', icon: '🏢', desc: 'Any other business type' },
@@ -529,9 +529,9 @@ const Survey = () => {
 
   return (
     <div className={`survey-container ${isDarkMode ? 'dark' : 'light'}`}>
-      <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+      {/* <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
         {isDarkMode ? '☀️' : '🌙'}
-      </button>
+      </button> */}
       <button className="skip-button" onClick={() => navigate('/login')}>
         Skip Survey →
       </button>
